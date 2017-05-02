@@ -1,0 +1,45 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}BMS图书管理系统{% endblock %}
+
+{% block head %}
+{{super()}}
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='css/style.css')}}">
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('index') }}">BMS首页</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('books') }}">纸质书</a></li>
+                <li><a href="{{ url_for('ebooks') }}">电子书</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock%}
+
+{% block content %}
+<div class ="container">
+    {% block page_content %}
+    {% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-cn')}}
+
+<script src="{{url_for('.static', filename='js/main.js')}}"></script>
+
+{% endblock %}
