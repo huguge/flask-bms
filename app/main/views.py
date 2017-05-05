@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*- 
 from flask import render_template, session, redirect, url_for,flash
-from . import main 
-from .forms import LoginForm
-from .. import db
-from ..models import User
+from app.main import main 
+from app.main.forms import LoginForm
+from app import db
+from app.models import User
 @main.route('/')
 def index():
     return render_template('index.html',
@@ -32,7 +32,7 @@ def login():
             return redirect(url_for('.index'))
         else:
             flash(u'输入信息有误')
-        return redirect(url_for('login'))
+        return redirect(url_for('.login'))
     return render_template('login.html',
         app_name='Flask-BMS',
         username=username,
