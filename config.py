@@ -19,7 +19,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_test'
+    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_development'
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_production'

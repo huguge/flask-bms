@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 import os
+import sys
+
 
 from app import create_app,db
 from app.models import User
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 app = create_app(os.getenv('FLASK_BMS_ENV') or 'default')
 manager = Manager(app)

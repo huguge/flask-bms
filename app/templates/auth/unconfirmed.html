@@ -1,0 +1,19 @@
+{% extends "base.html"%}
+
+{% import "bootstrap/wtf.html" as wtf%}
+
+{% block page_content %}
+<div class ="container">
+    <div class ="row">
+        <h4>{{ user.username }} 您好:</h4>
+        <p>请先登入您的邮箱，激活您的邮箱账号!</p>
+        <p>如果未收到邮件，请点击链接<a href="{{url_for('auth.resend_confirm_email')}}">重新发送邮件</a></p>
+    </div>
+</div>
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{message}}
+</div>
+{% endfor %}
+{% endblock %}
