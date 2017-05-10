@@ -1,14 +1,13 @@
 import os
 # basedir = os.path.abspath(ps.path.dirname(__file__))
-DATABASE_URI = 'mysql://root:123456@localhost/'
+DATABASE_URI = os.environ.get('FLASK_BMS_MYSQL_URL') or 'mysql://root:123456@localhost/'
 class Config(object):
-    SECRET_KEY = os.environ.get('SECRET') or 'IWILLNOTTELLYOU'
+    SECRET_KEY = os.environ.get('FLASK_BMS_SECRET') or 'IWILLNOTTELLYOU'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
     DEBUG = False
     FLASK_BMS_EMAIL_PREFIX = '[BMS]'
-    FLASK_BMS_EMAIL_SENDER = 'Admin <admin@bms.com>'
+    FLASK_BMS_EMAIL_SENDER = os.environ.get('FLASK_BMS_EMAIL_USERNAME')
     FLASK_BMS_ADMIN = os.environ.get('FLASK_BMS_ADMIN') or 'administrator'
     MAIL_SERVER = os.environ.get('FLASK_BMS_EMAIL_SERVER')
     MAIL_USERNAME = os.environ.get('FLASK_BMS_EMAIL_USERNAME')

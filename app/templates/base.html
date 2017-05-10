@@ -33,7 +33,7 @@
                     {% if current_user.is_authenticated %}
                     <ul class="dropdown-menu">
                         <li><a href="#">用户首页</a></li>
-                        <li><a href="#">修改密码</a></li>
+                        <li><a href="{{ url_for('auth.changepassword') }}">修改密码</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="{{ url_for('auth.logout') }}">用户退出</a></li>
                     </ul>
