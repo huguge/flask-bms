@@ -8,7 +8,7 @@ class Config(object):
     DEBUG = False
     FLASK_BMS_EMAIL_PREFIX = '[BMS]'
     FLASK_BMS_EMAIL_SENDER = os.environ.get('FLASK_BMS_EMAIL_USERNAME')
-    FLASK_BMS_ADMIN = os.environ.get('FLASK_BMS_ADMIN') or 'administrator'
+    FLASK_BMS_ADMIN = os.environ.get('FLASK_BMS_ADMIN') or 'admin@bms.com'
     MAIL_SERVER = os.environ.get('FLASK_BMS_EMAIL_SERVER')
     MAIL_USERNAME = os.environ.get('FLASK_BMS_EMAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('FLASK_BMS_EMAIL_PASSWORD')
