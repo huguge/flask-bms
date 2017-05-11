@@ -18,12 +18,12 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_development'
+    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_development?charset=utf8'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_production'
+    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_production?charset=utf8'
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_test'
+    SQLALCHEMY_DATABASE_URI = DATABASE_URI+'flaskbms_test?charset=utf8'
 
 config = {
     'development':DevelopmentConfig,

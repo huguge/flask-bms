@@ -1,0 +1,22 @@
+{% extends "base.html"%}
+{% block page_content %}
+<div class ="container">
+    <div class ="row">
+        <div class="page-header">
+            <h2>{{ user.username }}</h2>
+        </div>
+        {% if current_user.is_super_admin() %}
+        <p><a href="mailto:{{user.email}}">{{user.email}}</a></p>
+        {% endif %}
+        {% if user.about_me %}
+        <p>{{user.about_me}}</p>
+        {% endif %}
+        <p>注册时间:{{moment(user.created_at).format('L')}}</p>
+        <p>上次登入时间：{{moment(user.last_seen).fromNow()}}</p>
+
+        {% if user == current_user %}
+          <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">编辑个人页面</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
