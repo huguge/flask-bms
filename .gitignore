@@ -73,6 +73,9 @@ target/
 
 # celery beat schedule file
 celerybeat-schedule
+*.pdf
+*.doc
+*.docx
 
 # dotenv
 .env

@@ -14,4 +14,12 @@ export FLASK_BMS_DATABASE_URI='mysql://root:123456@localhost/'(实例)
 
 第一次部署需要安装数据库
 
+```
 mysql -u*** -p < install/install.sql
+```
+
+
+生产环境下启动服务器
+```
+gunicorn --bind 0.0.0.0:8000 wsgi
+```
