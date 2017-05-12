@@ -12,6 +12,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 app = create_app(os.getenv('FLASK_BMS_ENV') or 'default')
+config = app.config
 manager = Manager(app)
 migrate = Migrate(app,db)
 def make_shell_context():

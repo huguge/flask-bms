@@ -22,22 +22,30 @@
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('main.books') }}">纸质书</a></li>
                 <li><a href="{{ url_for('main.ebooks') }}">电子书</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('main.upload_ebooks') }}">上传电子书</a></li>
+                {% endif %}
             </ul>
              <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" 
-                    data-toggle="dropdown" 
-                    role="button" 
-                    aria-haspopup="true" 
-                    aria-expanded="false">用户管理 <span class="caret"></span></a>
-                    {% if current_user.is_authenticated %}
+                {% if current_user.is_authenticated %}
+                    <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <img src="{{ current_user.gravatar(size=18) }}">
+                        {{ current_user.username }} <b class="caret"></b>
+                    </a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('main.user',username=current_user.username)}}">用户首页</a></li>
                         <li><a href="{{ url_for('auth.changepassword') }}">修改密码</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="{{ url_for('auth.logout') }}">用户退出</a></li>
                     </ul>
-                    {% else %}
+                {% else %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" 
+                    data-toggle="dropdown" 
+                    role="button" 
+                    aria-haspopup="true" 
+                    aria-expanded="false">用户管理 <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('auth.login') }}">用户登入</a></li>
                         <li><a href="{{ url_for('auth.register') }}">用户注册</a></li>

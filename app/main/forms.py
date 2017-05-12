@@ -3,6 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms.validators import Required,Email,Length,Regexp,EqualTo
 from wtforms import StringField,SubmitField,BooleanField,TextAreaField,SelectField
 from wtforms import ValidationError
+from flask_wtf.file import FileField,FileRequired,FileAllowed
+from app.models import Role,Category,Tag
 
 class EditProfileForm(FlaskForm):
     name = StringField(u'用户真实姓名', validators=[Length(1,64)])
@@ -35,3 +37,16 @@ class AdminProfileForm(FlaskForm):
     def validate_username(self,field):
         if field.data != self.user.username and User.query.filter_by(username=field.data).first():
             raise ValidationError('用户名已被占用')
+
+# 上传图书表单
+class UploadEbookForm(FlaskForm):
+    name = StringField(u'名称', validators=[Length(1,64)])
+    author = StringField(u'作者', validators=[Length(1,32)])
+    category = SelectField('选择类别',coerce=int)
+    description = TextAreaField(u'简短介绍')
+    ebook_file = FileField('上传电子书',validators=[FileRequired(),FileAllowed(['pdf','doc','docx'],'暂时仅支持pdf与word文档')])
+    submit = SubmitField(u'点击创建')
+    def __init__(self,*args,**kw):
+        super(UploadEbookForm,self).__init__(*args,**kw)
+        self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]
+

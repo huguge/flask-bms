@@ -1,11 +1,13 @@
 # -*- coding:utf-8 -*- 
 
 from datetime import datetime
-from flask import current_app
+from flask import current_app,request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin,AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from app import db, login_manager
+import hashlib
+
 # 定义数据库models
 
 
@@ -39,6 +41,9 @@ class Role(db.Model):
             role.default = roles[r][1]
             db.session.add(role)
         db.session.commit()
+
+
+
 class User(db.Model,UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -51,10 +56,9 @@ class User(db.Model,UserMixin):
     about_me = db.Column(db.Text())
     created_at = db.Column(db.DateTime(),default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
-    
-    def ping(self):
-        self.last_seen = datetime.utcnow()
-        db.session.add(self)
+    avatar_hash = db.Column(db.String(32))
+    # 在Ebook中增加一个upload_user对象
+    ebooks = db.relationship('Ebook',backref='upload_user',lazy='dynamic')
 
     def __init__(self,**kw):
         super(User,self).__init__(**kw)
@@ -63,6 +67,21 @@ class User(db.Model,UserMixin):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+    
+    def gravatar(self,size=100,default='identicon',rating='g'):
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        hash = self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url, hash=hash, size=size, default=default, rating=rating)
+    
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
+
     def generate_confirmation_token(self,expiration=3600):
         s=Serializer(current_app.config['SECRET_KEY'],expiration)
         return s.dumps({'confirm':self.id})
@@ -108,8 +127,56 @@ class AnonymousUser(AnonymousUserMixin):
         return False
 
 
+# 创建一个基本的多对多的数据库表
+tags = db.Table('tags',
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+    db.Column('ebook_id', db.Integer, db.ForeignKey('ebooks.id'))
+)
+
+class Ebook(db.Model):
+    __tablename__ = 'ebooks'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128))
+    author = db.Column(db.String(32))
+    description = db.Column(db.Text())
+
+    created_at = db.Column(db.DateTime(),default=datetime.utcnow)
+    downloads = db.Column(db.Integer,default=0)
+    file_path = db.Column(db.String(256))
+    image_path = db.Column(db.String(256))
+    uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
+    tags = db.relationship('Tag', secondary=tags,backref=db.backref('ebooks', lazy=True))
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    description = db.Column(db.Text())
+    ebooks = db.relationship('Ebook',backref='category',lazy='dynamic')
+    @staticmethod
+    def insert_category():
+        categories = [
+            '开发技术',
+            '运维技术',
+            '数据库',
+            '系统架构',
+            '其他'
+        ]
+        for r in categories:
+            c = Category.query.filter_by(name=r).first()
+            if c is None:
+                c = Category(name=r)
+            db.session.add(c)
+        db.session.commit()   
+
+class Tag(db.Model): 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    description = db.Column(db.Text())
+
+login_manager.anonymous_user = AnonymousUser
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-login_manager.anonymous_user = AnonymousUser
