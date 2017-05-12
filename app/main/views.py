@@ -1,13 +1,15 @@
 # -*- coding:utf-8 -*- 
 from flask import render_template, session, redirect, url_for,flash
 from flask_login import login_required,current_user
-
-
+from werkzeug.utils import secure_filename
+import os
+# from manage import config
 from app.main import main 
 from app import db
-from app.models import User
+from app.models import User,Ebook
 from app.lib import super_admin_require
-from app.main.forms import EditProfileForm
+from app.main.forms import EditProfileForm, UploadEbookForm
+from config import config
 @main.route('/')
 def index():
     return render_template('index.html',
@@ -51,3 +53,26 @@ def edit_profile():
     form.name.data = current_user.name
     form.about_me.data = current_user.about_me
     return render_template('user/edit_profile.html',form=form,)
+
+    upload_ebooks
+@main.route('/upload',methods=['POST','GET'])
+@login_required
+def upload_ebooks():
+    form = UploadEbookForm()
+    book = Ebook(uploader_id=current_user.id)
+    if form.validate_on_submit():
+        f = form.ebook_file.data
+        file_name = secure_filename(f.filename)
+        file_path = os.path.join(config['default'].UPLOAD_PATH,file_name)
+        f.save(file_path)
+        book.name = file_name
+        book.file_path =file_path
+        book.author = form.author.data
+        book.description = form.description.data or u'暂无介绍'
+        book.category_id = form.category.data
+        book.uploader_id = current_user.id
+
+        flash('上传电子书成功')
+        print book
+        return redirect(url_for('main.upload_ebooks'))
+    return render_template('book/upload_ebook.html',form=form)

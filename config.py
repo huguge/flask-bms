@@ -6,6 +6,7 @@ class Config(object):
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
+    UPLOAD_PATH = os.path.dirname(os.path.realpath(__file__))+'/uploads'
     FLASK_BMS_EMAIL_PREFIX = '[BMS]'
     FLASK_BMS_EMAIL_SENDER = os.environ.get('FLASK_BMS_EMAIL_USERNAME')
     FLASK_BMS_ADMIN = os.environ.get('FLASK_BMS_ADMIN') or 'admin@bms.com'

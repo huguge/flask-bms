@@ -22,6 +22,9 @@
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('main.books') }}">纸质书</a></li>
                 <li><a href="{{ url_for('main.ebooks') }}">电子书</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('main.upload_ebooks') }}">上传电子书</a></li>
+                {% endif %}
             </ul>
              <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
