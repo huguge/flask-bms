@@ -1,11 +1,13 @@
 # -*- coding:utf-8 -*- 
 
 from datetime import datetime
-from flask import current_app
+from flask import current_app,request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin,AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from app import db, login_manager
+import hashlib
+
 # 定义数据库models
 
 
@@ -51,10 +53,7 @@ class User(db.Model,UserMixin):
     about_me = db.Column(db.Text())
     created_at = db.Column(db.DateTime(),default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
-    
-    def ping(self):
-        self.last_seen = datetime.utcnow()
-        db.session.add(self)
+    avatar_hash = db.Column(db.String(32))
 
     def __init__(self,**kw):
         super(User,self).__init__(**kw)
@@ -63,6 +62,20 @@ class User(db.Model,UserMixin):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+    
+    def gravatar(self,size=100,default='identicon',rating='g'):
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        hash = self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url, hash=hash, size=size, default=default, rating=rating)
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
+
     def generate_confirmation_token(self,expiration=3600):
         s=Serializer(current_app.config['SECRET_KEY'],expiration)
         return s.dumps({'confirm':self.id})

@@ -1,6 +1,6 @@
 import os
 # basedir = os.path.abspath(ps.path.dirname(__file__))
-DATABASE_URI = os.environ.get('FLASK_BMS_MYSQL_URL') or 'mysql://root:123456@localhost/'
+DATABASE_URI = os.environ.get('FLASK_BMS_MYSQL_URL') or 'mysql://root:123456@172.17.0.2/'
 class Config(object):
     SECRET_KEY = os.environ.get('FLASK_BMS_SECRET') or 'IWILLNOTTELLYOU'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True

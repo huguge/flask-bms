@@ -47,7 +47,7 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash('更新信息成功')
-        return redirect(url_for('main.user',username=current_user.username))
+        return redirect(url_for('main.edit_profile',username=current_user.username))
     form.name.data = current_user.name
     form.about_me.data = current_user.about_me
     return render_template('user/edit_profile.html',form=form,)
