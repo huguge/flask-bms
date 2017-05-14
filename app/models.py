@@ -138,12 +138,14 @@ class Ebook(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     author = db.Column(db.String(32))
-    description = db.Column(db.Text())
-
+    description = db.Column(db.Text(),default=u"暂无评价")
+    file_type = db.Column(db.String(16))
+    file_size =  db.Column(db.Integer)
     created_at = db.Column(db.DateTime(),default=datetime.utcnow)
     downloads = db.Column(db.Integer,default=0)
     file_path = db.Column(db.String(256))
     image_path = db.Column(db.String(256))
+
     uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
     tags = db.relationship('Tag', secondary=tags,backref=db.backref('ebooks', lazy=True))

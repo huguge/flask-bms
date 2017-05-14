@@ -1,0 +1,1 @@
+from app.works.get_first_page_of_pdf import getImageFromPdf

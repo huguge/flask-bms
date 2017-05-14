@@ -10,6 +10,9 @@ from app.models import User,Ebook
 from app.lib import super_admin_require
 from app.main.forms import EditProfileForm, UploadEbookForm
 from config import config
+
+from app.works import getImageFromPdf
+
 @main.route('/')
 def index():
     return render_template('index.html',
@@ -19,11 +22,11 @@ def index():
 @main.route('/ebooks')
 @login_required
 def ebooks():
-    return render_template('ebooks.html', app_name='Flask-BMS')
+    return render_template('book/ebooks.html', app_name='Flask-BMS',ebooks = Ebook.query.all())
 @main.route('/books')
 @login_required
 def books():
-    return render_template('books.html', app_name='Flask-BMS')
+    return render_template('book/books.html', app_name='Flask-BMS')
 
 
 @main.route('/admin')
@@ -70,8 +73,19 @@ def upload_ebooks():
         book.author = form.author.data
         book.description = form.description.data or u'暂无介绍'
         book.category_id = form.category.data
-        book.uploader_id = current_user.id
-
+        book.upload_user = current_user._get_current_object()
+        
+        _,file_type = os.path.splitext(file_name)
+        book.file_type = file_type
+        book.file_size = os.path.getsize(file_path)
+        # 执行电子书页面生成如果是pdf提取第一页，如果是word则使用默认的图片
+        if file_type.upper() == '.PDF':
+            image_path = file_path+'.jpg'
+            getImageFromPdf(book.file_path,image_path)
+            book.image_path = url_for('static',filename='uploads/'+file_name+'.jpg')
+        else:
+            book.image_path = url_for('static.',filename='images/ebooks_default.png')
+        db.session.add(book)
         flash('上传电子书成功')
         print book
         return redirect(url_for('main.upload_ebooks'))

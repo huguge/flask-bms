@@ -1,0 +1,50 @@
+{% extends "base.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{% block page_content %}
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{message}}
+</div>
+{% endfor %}
+
+<div class ="container">
+    <div class ="row">
+        <div class="page-header col-md-12">
+            <h2>电子图书列表</h2>
+        </div> 
+        <div class = "page-content col-md-12">
+            <ul class="books">
+                {% for book in ebooks %}
+                <li class="book">
+                    <div class="book-thumbnail">
+                        <a href="{{ url_for("main.ebooks",id=book.id)}}">
+                            <img class = "img-rounded profile-thumbnail" src = "{{book.image_path}}"/>
+                        </a>
+                    </div>
+                     <div class ="book-name">
+                        <a href="{{ url_for("main.ebooks",id=book.id)}}">
+                           {{book.name}}
+                        </a>                      
+                    </div>                   
+                    <div class ="book-author">
+                        <a href="{{ url_for("main.user",username=book.upload_user.username)}}">
+                           {{book.upload_user.username}}
+                        </a>                      
+                    </div>
+
+                    <div class="book-date">
+                        {{moment(book.created_at).fromNow() }}
+                    </div>
+
+                    <div class="book-description">
+                        {{book.description}}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+{% block title %}用户个人页面{% endblock %}
 {% block page_content %}
 <div class ="container">
     <div class ="row">
@@ -14,7 +15,6 @@
         {% endif %}
         <p>注册时间:{{moment(user.created_at).format('L')}}</p>
         <p>上次登入时间：{{moment(user.last_seen).fromNow()}}</p>
-
         {% if user == current_user %}
           <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">编辑个人页面</a>
         {% endif %}

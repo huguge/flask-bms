@@ -1,22 +1,2 @@
-{% extends "base.html"%}
-
-{% import "bootstrap/wtf.html" as wtf%}
-
-{% block page_content %}
-<div class ="container">
-    <div class ="row center">
-        <div class="page-header col-md-12">
-            <h2>修改用户信息页面</h2>
-        </div>
-        <div class="page-content col-md-5 col-sm-12">       
-         {{wtf.quick_form(form)}}
-        </div>
-    </div>
-</div>
-{% for message in get_flashed_messages() %}
-<div class="alert alert-success">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{message}}
-</div>
-{% endfor %}
-{% endblock %}
+{% extends "form_base.html"%}
+{% block title %}修改用户信息页面{% endblock %}
