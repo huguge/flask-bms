@@ -1,6 +1,6 @@
 import os
 # basedir = os.path.abspath(ps.path.dirname(__file__))
-DATABASE_URI = os.environ.get('FLASK_BMS_MYSQL_URL') or 'mysql://root:123456@localhost/'
+DATABASE_URI = os.environ.get('FLASK_BMS_MYSQL_URL') or 'mysql://root:123456@172.17.0.2/'
 class Config(object):
     SECRET_KEY = os.environ.get('FLASK_BMS_SECRET') or 'IWILLNOTTELLYOU'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
@@ -13,6 +13,8 @@ class Config(object):
     MAIL_SERVER = os.environ.get('FLASK_BMS_EMAIL_SERVER')
     MAIL_USERNAME = os.environ.get('FLASK_BMS_EMAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('FLASK_BMS_EMAIL_PASSWORD')
+    # max_page_number
+    FLASK_BMS_MAX_PER_PAGE = 10
     @staticmethod
     def init_app(app):
         pass

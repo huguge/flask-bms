@@ -5,6 +5,7 @@ import sys
 
 from app import create_app,db
 from app.models import User,Role
+from flask import request
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
@@ -12,6 +13,14 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 app = create_app(os.getenv('FLASK_BMS_ENV') or 'default')
+
+if os.getenv('FLASK_BMS_ENV') != 'production':
+    @app.after_request
+    def app_after_request(response):
+        if request.endpoint != 'static':
+            return response
+        response.cache_control.max_age = 0
+        return response
 config = app.config
 manager = Manager(app)
 migrate = Migrate(app,db)

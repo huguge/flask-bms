@@ -1,0 +1,27 @@
+body{
+    font-family: 'Hiragino Sans GB','Microsoft Yahei',Arial,sans-serif;
+}
+
+ul.books{
+    list-style: none; 
+    margin: 0 0 0 4px;
+    padding: 0;
+}
+ul.books img.book-list-img{
+    width: 160px;
+    height: 210px;
+}
+
+.book-info .book-name{
+    font-size: 1.3em;
+    font-weight: bold; 
+}
+.book-info a{
+    color:black;
+}
+.book-date{
+    color:gray;
+    font-size: 0.7em;
+}
+
+

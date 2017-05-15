@@ -15,7 +15,9 @@ export FLASK_BMS_DATABASE_URI='mysql://root:123456@localhost/'(实例)
 第一次部署需要安装数据库
 
 ```
-mysql -u*** -p < install/install.sql
+1. sudo apt-get install libmysqlclient-dev
+2. pip install -r requirements.txt
+3. mysql -u*** -p < install/install.sql
 ```
 
 

@@ -14,3 +14,5 @@ USE `flaskbms_production`;
 
 -- Enable client program to communicate with the server using utf8 character set
 SET NAMES 'utf8';
+
+SHOW create database flaskbms_production;

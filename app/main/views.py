@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*- 
-from flask import render_template, session, redirect, url_for,flash
+from flask import render_template, session, redirect, url_for,flash,current_app,request
 from flask_login import login_required,current_user
 from werkzeug.utils import secure_filename
 import os
@@ -19,10 +19,14 @@ def index():
         app_name = 'Flask-BMS',
         username = session.get('username'))
 
-@main.route('/ebooks')
+@main.route('/ebooks',methods=['GET','POST'])
 @login_required
 def ebooks():
-    return render_template('book/ebooks.html', app_name='Flask-BMS',ebooks = Ebook.query.all())
+    page = request.args.get('page',1,type=int)
+    pagination = Ebook.query.order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
+    ebooks = pagination.items
+    return render_template('book/ebooks.html', app_name='Flask-BMS',ebooks = ebooks,pagination = pagination)
+
 @main.route('/books')
 @login_required
 def books():
@@ -65,7 +69,7 @@ def upload_ebooks():
     book = Ebook(uploader_id=current_user.id)
     if form.validate_on_submit():
         f = form.ebook_file.data
-        file_name = secure_filename(f.filename)
+        file_name = f.filename
         file_path = os.path.join(config['default'].UPLOAD_PATH,file_name)
         f.save(file_path)
         book.name = file_name
