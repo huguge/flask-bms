@@ -50,3 +50,7 @@ class UploadEbookForm(FlaskForm):
         super(UploadEbookForm,self).__init__(*args,**kw)
         self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]
 
+class CommentForm(FlaskForm):
+    body = TextAreaField('',validators=[Required()])
+    submit = SubmitField('提交评论')
+

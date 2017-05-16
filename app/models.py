@@ -5,6 +5,8 @@ from flask import current_app,request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin,AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from markdown import markdown
+import bleach
 from app import db, login_manager
 import hashlib
 
@@ -49,16 +51,20 @@ class User(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(64),unique=True,index=True)
-    role_id = db.Column(db.Integer,db.ForeignKey('roles.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
-    confirmed = db.Column(db.Boolean,default=False)
+    confirmed = db.Column(db.Boolean, default=False)
     name = db.Column(db.String(64))
     about_me = db.Column(db.Text())
-    created_at = db.Column(db.DateTime(),default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     # 在Ebook中增加一个upload_user对象
-    ebooks = db.relationship('Ebook',backref='upload_user',lazy='dynamic')
+    ebooks = db.relationship('Ebook', backref='upload_user', lazy='dynamic')
+
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+
+
 
     def __init__(self,**kw):
         super(User,self).__init__(**kw)
@@ -119,7 +125,7 @@ class User(db.Model,UserMixin):
         return '<User %r>'%self.username
 
 class AnonymousUser(AnonymousUserMixin):
-    def can(self,permission):
+    def can(self, permission):
         return False
     def is_super_admin(self):
         return False
@@ -146,6 +152,9 @@ class Ebook(db.Model):
     file_path = db.Column(db.String(256))
     image_path = db.Column(db.String(256))
 
+
+    comments = db.relationship('Comment', backref='ebook', lazy='dynamic')
+
     uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
     tags = db.relationship('Tag', secondary=tags,backref=db.backref('ebooks', lazy=True))
@@ -157,14 +166,15 @@ class Category(db.Model):
     description = db.Column(db.Text())
     ebooks = db.relationship('Ebook',backref='category',lazy='dynamic')
     @staticmethod
-    def insert_category():
-        categories = [
-            '开发技术',
-            '运维技术',
-            '数据库',
-            '系统架构',
-            '其他'
-        ]
+    def insert_category(categories=None):
+        if categories==None:
+            categories = [
+                '开发技术',
+                '运维技术',
+                '数据库',
+                '系统架构',
+                '其他'
+            ]
         for r in categories:
             c = Category.query.filter_by(name=r).first()
             if c is None:
@@ -176,6 +186,32 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.Text())
+
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+
+    timestamp = db.Column(db.DateTime,index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    ebook_id = db.Column(db.Integer, db.ForeignKey('ebooks.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+# setting comment body listener to trigge the body_html set 
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
 
 login_manager.anonymous_user = AnonymousUser
 

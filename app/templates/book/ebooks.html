@@ -21,13 +21,13 @@
                 {% for book in ebooks %}
                 <li class="book row">
                     <div class="book-thumbnail col-md-2">
-                        <a href="{{ url_for("main.ebooks",id=book.id)}}">
+                        <a href="{{ url_for("main.ebook",id=book.id)}}">
                             <img class = "book-list-img" src = "{{book.image_path}}"/>
                         </a>
                     </div>
                     <div class = "book-info col-md-10">
                         <div class ="book-name">
-                            <a href="{{ url_for("main.ebooks",id=book.id)}}">
+                            <a href="{{ url_for("main.ebook",id=book.id)}}">
                             {{book.name}}
                             </a>                      
                         </div>                   
@@ -40,7 +40,6 @@
                         <div class="book-date">
                             上传于{{moment(book.created_at).fromNow() }}
                         </div>
-                        <br>
                         <div class="book-description">
                            {{book.description}}
                         </div>

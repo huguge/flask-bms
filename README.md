@@ -18,6 +18,12 @@ export FLASK_BMS_DATABASE_URI='mysql://root:123456@localhost/'(实例)
 1. sudo apt-get install libmysqlclient-dev
 2. pip install -r requirements.txt
 3. mysql -u*** -p < install/install.sql
+
+python manage.py shell
+
+>>>Role.insert_roles()
+>>>Category.insert_category()
+
 ```
 
 
