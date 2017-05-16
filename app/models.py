@@ -10,6 +10,8 @@ import bleach
 from app import db, login_manager
 import hashlib
 
+from app.errors import ResourceNotAvalibleError
+
 # 定义数据库models
 
 
@@ -29,7 +31,7 @@ class Role(db.Model):
     default = db.Column(db.Boolean,default=False,index=True)
     permissions = db.Column(db.Integer)
     @staticmethod
-    def insert_roles():
+    def insert_default():
         roles = {
             'User':(Permission.FOLLOW|Permission.WRITE_ARTICLES|Permission.WRITE_COMMENT,True),
             'ContentAdmin':(Permission.FOLLOW|Permission.WRITE_ARTICLES|Permission.WRITE_COMMENT|Permission.ADMIN_CONTENT,False),
@@ -61,9 +63,11 @@ class User(db.Model,UserMixin):
     avatar_hash = db.Column(db.String(32))
     # 在Ebook中增加一个upload_user对象
     ebooks = db.relationship('Ebook', backref='upload_user', lazy='dynamic')
-
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-
+    # 在Ebook中增加一个upload_user对象
+    books = db.relationship('Book', backref='upload_user', lazy='dynamic')
+    # 在BookRent中加入rent_user
+    rents_book = db.relationship('BookRent', backref='rent_user', lazy='dynamic')
 
 
     def __init__(self,**kw):
@@ -134,7 +138,7 @@ class AnonymousUser(AnonymousUserMixin):
 
 
 # 创建一个基本的多对多的数据库表
-tags = db.Table('tags',
+ebooks_tags = db.Table('ebooks_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
     db.Column('ebook_id', db.Integer, db.ForeignKey('ebooks.id'))
 )
@@ -151,13 +155,10 @@ class Ebook(db.Model):
     downloads = db.Column(db.Integer,default=0)
     file_path = db.Column(db.String(256))
     image_path = db.Column(db.String(256))
-
-
     comments = db.relationship('Comment', backref='ebook', lazy='dynamic')
-
     uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
-    tags = db.relationship('Tag', secondary=tags,backref=db.backref('ebooks', lazy=True))
+    tags = db.relationship('Tag', secondary=ebooks_tags,backref=db.backref('ebooks', lazy=True))
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -166,7 +167,7 @@ class Category(db.Model):
     description = db.Column(db.Text())
     ebooks = db.relationship('Ebook',backref='category',lazy='dynamic')
     @staticmethod
-    def insert_category(categories=None):
+    def insert_default(categories=None):
         if categories==None:
             categories = [
                 '开发技术',
@@ -194,12 +195,11 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
-
     timestamp = db.Column(db.DateTime,index=True, default=datetime.utcnow)
-    disabled = db.Column(db.Boolean)
+    disabled = db.Column(db.Boolean,default=False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     ebook_id = db.Column(db.Integer, db.ForeignKey('ebooks.id'))
-
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
@@ -212,6 +212,81 @@ class Comment(db.Model):
 # setting comment body listener to trigge the body_html set 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
+# 创建一个基本的多对多的数据库表
+books_tags = db.Table('books_tags',
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+    db.Column('book_id', db.Integer, db.ForeignKey('books.id'))
+)
+
+class BookStatus(db.Model):
+    __tablename__ = 'book_status'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    description = db.Column(db.Text())
+    books = db.relationship('Book',backref='status',lazy='dynamic')
+    @staticmethod
+    def insert_default(status_list=None):
+        if status_list==None:
+            status_list = [
+                '可借阅',
+                '已借出',
+                '书籍损坏',
+                '不可借阅',
+                '其他'
+            ]
+        for r in status_list:
+            c = BookStatus.query.filter_by(name=r).first()
+            if c is None:
+                c = BookStatus(name=r)
+            db.session.add(c)
+        db.session.commit()   
+
+class Book(db.Model):
+    __tablename__ = 'books'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128))
+    author = db.Column(db.String(32))
+    description = db.Column(db.Text(),default=u"暂无评价")
+
+    book_number = db.Column(db.String(50))
+    isbn = db.Column(db.String(32))
+    publisher = db.Column(db.String(50))
+
+    status_id = db.Column(db.Integer,db.ForeignKey('book_status.id'))
+    image_path = db.Column(db.String(256))
+    comments = db.relationship('Comment', backref='book', lazy='dynamic')
+    uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
+    tags = db.relationship('Tag', secondary=books_tags,backref=db.backref('books', lazy=True))
+    rent_events = db.relationship('BookRent', backref='book', lazy='dynamic')
+    comments = db.relationship('Comment', backref='book', lazy='dynamic')
+    
+    # number of this book
+    total_count = db.Column(db.Integer,default=0)
+    rent_count = db.Column(db.Integer,default=0)
+
+    def cam_rent(self):
+        return self.total_count-self.rent_count
+    def rent_book(self):
+        if self.total_count>self.rent_count:
+            self.rent_count=self.rent_count+1
+        else:
+            raise ResourceNotAvalibleError
+    def return_book(self):
+        if self.rent_count>0:
+            self.rent_count=self.rent_count-1
+        else:
+            raise ResourceNotAvalibleError
+
+
+class BookRent(db.Model):
+    __tablename__ = 'book_rent'
+    id = db.Column(db.Integer, primary_key=True)
+    active = db.Column(db.Boolean,default=True)
+    rent_person_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    rent_book_id =  db.Column(db.Integer, db.ForeignKey('books.id'))
+    rent_date = db.Column(db.DateTime(), default=datetime.utcnow)
+    rent_time = db.Column(db.Integer,default=7)
 
 login_manager.anonymous_user = AnonymousUser
 

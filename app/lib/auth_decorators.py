@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from app.models import Permission
 
+
 def permission_require(permission):
     def wrapper(f):
         @wraps(f)

@@ -1,0 +1,53 @@
+{% extends "base.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{% import "book/_macros.html" as macros %}
+
+
+{% block page_content %}
+{% for message in get_flashed_messages() %}
+
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{message}}
+</div>
+{% endfor %}
+<div class ="container">
+    <div class ="row">
+        <div class="page-header col-md-12">
+            <h2>库存图书列表</h2>
+        </div> 
+        <div class = "page-content ">
+            <ul class="books col-md-12">
+                {% for book in books %}
+                <li class="book row">
+                    <div class="book-thumbnail col-md-2">
+                        <a href="{{ url_for("main.book",id=book.id)}}">
+                            <img class = "book-list-img" src = "{{book.image_path}}"/>
+                        </a>
+                    </div>
+                    <div class = "book-info col-md-10">
+                        <div class ="book-name">
+                            <a href="{{ url_for("main.book",id=book.id)}}">
+                            {{book.name}}
+                            </a>                      
+                        </div>                   
+                        <div class ="book-author">
+                            <a href="{{ url_for("main.user",username=book.upload_user.username)}}">
+                            {{book.upload_user.username}}
+                            </a>                      
+                        </div>
+                        <div class="book-description">
+                           {{book.description}}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'main.books')}}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -18,11 +18,22 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('main.books') }}">纸质书</a></li>
-                <li><a href="{{ url_for('main.ebooks') }}">电子书</a></li>
-                {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('main.upload_ebooks') }}">上传电子书</a></li>
-                {% endif %}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">书籍借阅 <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('main.books')}}">书籍列表</a></li>
+                    <li><a href="{{ url_for('main.addbook')}}">新增书籍</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">电子书下载 <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('main.ebooks')}}">电子书列表</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('main.upload_ebooks') }}">上传电子书</a></li>
+                    {% endif %}
+                </ul>
+            </li>
             </ul>
              <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}

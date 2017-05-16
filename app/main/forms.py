@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*- 
 from flask_wtf import FlaskForm
-from wtforms.validators import Required,Email,Length,Regexp,EqualTo
-from wtforms import StringField,SubmitField,BooleanField,TextAreaField,SelectField
+from wtforms.validators import Required,Email,Length,Regexp,EqualTo,DataRequired
+from wtforms import StringField,SubmitField,BooleanField,TextAreaField,SelectField,IntegerField
 from wtforms import ValidationError
 from flask_wtf.file import FileField,FileRequired,FileAllowed
-from app.models import Role,Category,Tag
+from app.models import Role,Category,Tag,BookStatus
 
 class EditProfileForm(FlaskForm):
     name = StringField(u'用户真实姓名', validators=[Length(1,64)])
@@ -49,7 +49,22 @@ class UploadEbookForm(FlaskForm):
     def __init__(self,*args,**kw):
         super(UploadEbookForm,self).__init__(*args,**kw)
         self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]
-
+class AddBookForm(FlaskForm):
+    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,64)])
+    author = StringField(u'作者', validators=[Length(1,32)])
+    publisher = StringField(u'出版社', validators=[Length(1,32)])
+    book_number = StringField(u'编号', validators=[Length(1,32)])
+    isbn = StringField(u'图书ISBN', validators=[Length(1,32)])
+    total_count = IntegerField(u'图书数量',default=0)
+    category = SelectField('选择类别',coerce=int)
+    status = SelectField(u'选择图书状态',coerce=int)
+    description = TextAreaField(u'简短介绍')
+    book_img = FileField('上传封面',validators=[FileRequired(),FileAllowed(['jpg','png'],'暂时仅支持jpg与png文档')])
+    submit = SubmitField(u'点击创建')
+    def __init__(self,*args,**kw):
+        super(AddBookForm,self).__init__(*args,**kw)
+        self.status.choices = [(c.id,c.name) for c in BookStatus.query.order_by(BookStatus.name).all()] 
+        self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]   
 class CommentForm(FlaskForm):
     body = TextAreaField('',validators=[Required()])
     submit = SubmitField('提交评论')

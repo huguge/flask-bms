@@ -4,13 +4,14 @@ from flask_login import login_required,current_user
 from werkzeug.utils import secure_filename
 import urllib
 import os
+import time
 
 # from manage import config
 from app.main import main 
 from app import db
-from app.models import User, Ebook, Comment, Permission
+from app.models import User, Ebook, Comment, Permission,Book
 from app.lib import super_admin_require
-from app.main.forms import EditProfileForm, UploadEbookForm, CommentForm
+from app.main.forms import EditProfileForm, UploadEbookForm, CommentForm, AddBookForm
 from config import config
 
 from app.works import getImageFromPdf
@@ -32,7 +33,78 @@ def ebooks():
 @main.route('/books')
 @login_required
 def books():
-    return render_template('book/books.html', app_name='Flask-BMS')
+    page = request.args.get('page', 1, type=int)
+    pagination = Book.query.order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
+    books = pagination.items    
+    return render_template('book/books.html', books=books, pagination = pagination, app_name='Flask-BMS')
+
+
+
+@main.route('/addbook',methods=['GET','POST'])
+@login_required
+def addbook():
+    form = AddBookForm()
+    book = Book(uploader_id=current_user.id)
+    if form.validate_on_submit():
+        f = form.book_img.data
+        ts = str(time.time()).split('.')[0]
+        file_name = ts+'_'+f.filename
+        file_path = os.path.join(config['default'].UPLOAD_PATH+'/books/', file_name)
+        f.save(file_path)
+        book.name = form.name.data
+        book.author = form.author.data or u'无'
+        book.description = form.description.data or u'暂无介绍'
+        book.category_id = form.category.data
+        book.status_id = form.status.data
+        book.upload_user = current_user._get_current_object()
+        book.isbn = form.isbn.data or u'无'
+        book.total_count = int(form.total_count.data or 0)
+        book.book_number = form.book_number.data or u'无'
+        book.publisher = form.publisher.data or u'无'
+        _, file_type = os.path.splitext(file_name)
+        book.image_path = url_for('static', filename='uploads/books/' + file_name)
+        # 执行电子书页面生成如果是pdf提取第一页，如果是word则使用默认的图片
+        # if file_type.upper() == '.JPG' or 'PNG':
+        #     resize_images(file_path, 'small_'+file_path)
+        #     book.image_path = url_for('static', filename='uploads/'+file_name+'.jpg')
+        # else:
+        #     book.image_path = url_for('static.', filename='images/ebooks_default.png')
+        db.session.add(book)
+        flash('新增图书成功')
+        return redirect(url_for('main.addbook'))
+    return render_template('book/add_book.html', form=form)
+
+@main.route('/book/<int:id>', methods=['GET', 'POST'])
+def book(id):
+    book = Book.query.get_or_404(id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data, book=book, author=current_user._get_current_object())
+        db.session.add(comment)
+        flash('评论信息成功创建')
+        return redirect(url_for('main.book', id=book.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (book.comments.count() -1)/current_app.config['FLASK_BMS_MAX_PER_PAGE'] +1
+    pagination = book.comments.order_by(Comment.timestamp.asc()).paginate(
+        page,
+        per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+    can_write_comment = current_user.can(Permission.WRITE_COMMENT)
+    print can_write_comment
+    return render_template('book/book.html',
+                           pagination=pagination,
+                           can_write_comment=can_write_comment,
+                           book=book,
+                           form=form,
+                           comments=comments)
+
+
+
+
+
+
 
 
 @main.route('/admin')

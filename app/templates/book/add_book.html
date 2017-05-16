@@ -1,0 +1,19 @@
+{% extends "form_base.html"%}
+{% block title %}上传电子图书{% endblock %}
+
+
+{% block styles %}
+{{ super() }}
+<link href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+  $(function() {
+    $("#datepicker").datepicker();
+  });
+</script>
+{% endblock %}
