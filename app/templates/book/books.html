@@ -15,7 +15,15 @@
     <div class ="row">
         <div class="page-header col-md-12">
             <h2>库存图书列表</h2>
-        </div> 
+                <div class='search-box'>
+                    <form class='search-form'>
+                        <input class='form-control' placeholder='搜索图书' type='text' id="search-term">
+                        <button class='btn btn-link search-btn' id="search-btn">
+                            <i class='glyphicon glyphicon-search'></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
         <div class = "page-content ">
             <ul class="books col-md-12">
                 {% for book in books %}
