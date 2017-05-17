@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var watch=require('gulp-watch');
 var connect = require('gulp-connect');
-// var jshint=require('gulp-jshint');
+var jshint=require('gulp-jshint');
 
 gulp.task('webserver',function () {
   connect.server({
@@ -19,7 +19,7 @@ gulp.task('jsLint', function () {
 
 gulp.task('livereload',function () {
   watch(['js/*.js']).pipe(jshint()).pipe(jshint.reporter());
-  watch(['css/*.css','js/*.js','*.html']).pipe(connect.reload());
+  watch(['css/*.css','js/*.js','**/*.html']).pipe(connect.reload());
 });
 
 gulp.task('default',['webserver','livereload']);

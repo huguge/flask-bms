@@ -81,7 +81,6 @@ def book(id):
     if form.validate_on_submit():
         comment = Comment(body=form.body.data, book=book, author=current_user._get_current_object())
         db.session.add(comment)
-        flash('评论信息成功创建')
         return redirect(url_for('main.book', id=book.id, page=-1))
     page = request.args.get('page', 1, type=int)
     if page == -1:
@@ -173,7 +172,7 @@ def ebook(id):
     ebook = Ebook.query.get_or_404(id)
     form = CommentForm()
     if form.validate_on_submit():
-        comment = Comment(body=form.body.data, ebook=ebook, author=current_user._get_current_object())
+        comment = Comment(body=form.body.data, book=ebook, author=current_user._get_current_object())
         db.session.add(comment)
         flash('评论信息成功创建')
         return redirect(url_for('main.ebook', id=ebook.id, page=-1))
@@ -190,7 +189,7 @@ def ebook(id):
     return render_template('book/ebook.html',
                            pagination=pagination,
                            can_write_comment=can_write_comment,
-                           ebook=ebook,
+                           book=ebook,
                            form=form,
                            comments=comments)
 

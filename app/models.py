@@ -166,6 +166,7 @@ class Category(db.Model):
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.Text())
     ebooks = db.relationship('Ebook',backref='category',lazy='dynamic')
+    books = db.relationship('Book',backref='category',lazy='dynamic')
     @staticmethod
     def insert_default(categories=None):
         if categories==None:

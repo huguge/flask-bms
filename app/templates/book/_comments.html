@@ -1,39 +1,60 @@
-<ul class="comments">
-    {% for comment in comments %}
-    
-    <li class="comment">
-        <div class="comment-thumbnail">
-            <a href="{{ url_for('main.user', username=comment.author.username) }}">
-                <img class="img-rounded profile-thumbnail" src="{{ comment.author.gravatar(size=40) }}"/>
-            </a>
-        </div>
-        <div class="comment-content">
-            <div class="comment-date">{{moment(comment.timestamp).fromNow()}}</div>
-            <div class="comment-author"><{{comment.author.username}}</div>
-            <div class="comment-body">
-                {% if comment.disabled %}
-                    <p><i>评论已被删除</i></p>
-                {% else %}
-                    {% if comment.body_html %}
-                        {{comment.body_html|safe}}
-                    {% else %}
-                        {{comment.body}}
-                    {% endif %}
-                {% endif %}
+<div class="col-md-12">
+<div class="detailBox">
+    <div class="titleBox">
+      <label>评论区</label>
+    </div>
+    <div class="actionBox">
+        <form action method="post" class="form-inline" role="form">
+            <div class="form-group">
+                <input class="form-control" type="text" name="body" placeholder="填写评论信息" required/>
             </div>
-            {% if moderate %}
-                <br/>
-                {% if comment.disabled %}
-                    <a class="btn btn-default">显示评论</a>
-                {% else %}
-                    <a class="btn btn-danger">禁止显示</a>
-                {% endif %}
-            {% endif %}
-        </div>
+            <div class="form-group">
+                <button class="btn btn-default">提交评论</button>
+            </div>
+            {{form.hidden_tag()}}
+        </form>
+         <ul class="commentList">
+            {% for comment in comments %}
+            <li>
+                <div class="commenterImage">
+                  <a href="{{ url_for('main.user', username=comment.author.username) }}">
+                    <img class="img-rounded profile-thumbnail" src="{{ comment.author.gravatar(size=40) }}"/>
+                 </a>
+                </div>
+                <div class="commentText">
+                    <span class="date sub-text">{{comment.author.username}}</span>
+                    <p class="">
+                        {% if comment.disabled %}
+                            <p><i>评论已被删除</i></p>
+                        {% else %}
+                            {% if comment.body_html %}
+                                {{comment.body_html|safe}}
+                            {% else %}
+                                {{comment.body}}
+                            {% endif %}
+                        {% endif %}</p> <span class="date sub-text">{{moment(comment.timestamp).fromNow()}}</span>
+                        {% if moderate %}
+                            <br/>
+                            {% if comment.disabled %}
+                                <a class="btn btn-default">显示评论</a>
+                            {% else %}
+                                <a class="btn btn-danger">禁止显示</a>
+                            {% endif %}
+                        {% endif %}
+                
+                </div>
+            </li>   
+        {% endfor %}
 
-    </li>
-    
-    
-    
-    {% endfor %}
-</ul>
+        {% if pagination.pages > 1 %}
+        <div class="page-comment">
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'main.book',fragment='#comment',id=book.id)}}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+    </ul>
+</div>
+</div>

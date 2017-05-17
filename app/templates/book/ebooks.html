@@ -47,10 +47,11 @@
                 </li>
                 {% endfor %}
             </ul>
+           {% if pagination.pages > 1 %}
             <div class="pagination">
                 {{ macros.pagination_widget(pagination,'main.ebooks')}}
             </div>
-
+            {% endif %}
         </div>
     </div>
 </div>

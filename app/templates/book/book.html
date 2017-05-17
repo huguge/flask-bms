@@ -14,38 +14,53 @@
 
 <div class ="container">
     <div class ="row">
-        <div class="page-header col-md-12">
-            <h2>{{ book.name }}</h2>
-            <h5>{{ book.author}}</h5>
-        </div> 
-        <div class = "page-content">
+        <div class = "page-content col-md-12">
             <div class="col-md-4">
                 <div class="book-img">
                     <img class = "book-big-img" src = "{{book.image_path}}"/>
                 </div>
+            </div>
+             <div class="col-md-8">
+                <h2>{{ book.name }}</h2>
+                <p class="sub-text">{{ book.author}}</h5>
                 <div class ="book-author">
-                    <a href="{{ url_for("main.user",username=book.upload_user.username)}}">
+                    <span class="item-name">上传用户</span><a href="{{ url_for("main.user",username=book.upload_user.username)}}">
                     {{book.upload_user.username}}
                     </a>                      
                 </div>
+                <div class="book-info">
+                     <span class="item-name">图书编号</span>{{book.book_number}}
+                </div>
+                <div class="book-info">
+                     <span class="item-name">ISBN编号</span>{{book.isbn}}
+                </div>
+                <div class="book-info">
+                     <span class="item-name">图书类别</span>{{book.category.name}}
+                </div>          
+                 <div class="book-info">
+                     <span class="item-name">出版社</span>{{book.publisher}}
+                </div>    
+                <div class="book-info">
+                     <span class="item-name">库存总量</span>{{book.total_count}}本
+                </div>    
+                <div class="book-info">
+                     <span class="item-name">已借出数量</span>{{book.rent_count}}本
+                </div>
                 <div class="book-description">
-                    {{book.description}}
+                     <span class="item-name">图书简介</span>{{book.description}}
+                </div>
+                <div class="order-button">
+                {% if book.cam_rent() %}
+                
+                <button type="button" class="btn btn-info">提交借阅申请</button>
+                {% else %}
+                <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>
+                {% endif %}
                 </div>
             </div>
         </div>
-        {% if can_write_comment %}
-        <div class='comment-form  col-md-8'>
-            {{ wtf.quick_form(form) }}
-        {% endif %}
-        {% include "book/_comments.html" %}
-        {% if pagination %}
-        <div class="page-comment">
-            <div class="pagination">
-                {{ macros.pagination_widget(pagination,'main.book',fragment='#comment',id=book.id)}}
-            </div>
-        </div>
-        {% endif %}
-        </div>
+ 
+            {% include "book/_comments.html" %}
     </div>
 </div>
 {% endblock %}

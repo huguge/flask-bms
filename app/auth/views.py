@@ -43,8 +43,7 @@ def login():
 def logout():
     # session.clear()
     logout_user()
-    flash('您已登出系统,欢迎下次访问')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('auth.login'))
 
 @auth.route('/confirm/<token>')
 @login_required

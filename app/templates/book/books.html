@@ -41,12 +41,14 @@
                         </div>
                     </div>
                 </li>
+                <hr/>
                 {% endfor %}
             </ul>
+           {% if pagination.pages > 1 %}
             <div class="pagination">
                 {{ macros.pagination_widget(pagination,'main.books')}}
             </div>
-
+            {% endif %}
         </div>
     </div>
 </div>

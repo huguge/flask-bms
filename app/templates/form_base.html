@@ -1,24 +1,37 @@
 {% extends "base.html"%}
-
 {% import "bootstrap/wtf.html" as wtf%}
+{% block styles %}
+{{super()}}
+<style>
+    body{
+        overflow-x:hidden;
+        /*background-color: #0c99d5;*/
+        background-image: url(//dp3vjvsy1r9i0.cloudfront.net/resources/background/radialoverlay2.png);
+        background-position: top center;
+        background-attachment: fixed;
+        background-size: cover;
+        background-color: #1D5D7C;
+
+    }
+
+</style>
+{% endblock %}
+
+
 
 {% block page_content %}
+
 <div class ="container">
     <div class ="row">
-        <div class="page-header col-md-12">
-            <h2>{% block title %}模板页面{% endblock %}</h2>
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{message}}
         </div>
-        <div class="page-content col-md-4 col-sm-12">       
+        {% endfor %}    
+        <div class="login-form">       
          {{wtf.quick_form(form)}}
         </div>
     </div>
 </div>
-{% for message in get_flashed_messages() %}
-
-<div class="alert alert-warning">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{message}}
-</div>
-{% endfor %}
-
 {% endblock %}

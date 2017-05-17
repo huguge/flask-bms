@@ -2,7 +2,7 @@ import os
 from wand.image import Image
 from wand.color import Color
 
-def getImageFromPdf(source_file, target_file, dest_width=200, dest_height=300):
+def getImageFromPdf(source_file, target_file, dest_width=350, dest_height=350):
     # print os.path.splitext(source_file)[1] 
     if os.path.splitext(source_file)[1] != '.pdf':
         raise NotImplementedError()

@@ -1,24 +1,41 @@
 {% extends "base.html"%}
 
 {% import "bootstrap/wtf.html" as wtf%}
-
+{% block styles %}
+{{super()}}
+<style>
+    body{
+        overflow-x:hidden;
+        /*background-color: #0c99d5;*/
+        background-image: url(//dp3vjvsy1r9i0.cloudfront.net/resources/background/radialoverlay2.png);
+        background-position: top center;
+        background-attachment: fixed;
+        background-size: cover;
+        background-color: #1D5D7C;
+    }
+</style>
+{% endblock %}
 {% block page_content %}
 <div class ="container">
     <div class ="row">
-        <div class="page-header col-md-12">
-            <h2>登入页面</h2>
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{message}}
         </div>
-        <div class="page-content col-md-4 col-sm-12">       
+        {% endfor %}    
+        <div class="login-form">       
          {{wtf.quick_form(form)}}
-         <hr>
-         <p>忘记密码? <a href="{{url_for('auth.forgetpassword')}}">点击链接</a>进行重置操作</p>
+        <span class="link-item">
+            <i class="fa fa-question-circle" aria-hidden="true"></i>&nbsp;
+            <a href="{{url_for('auth.forgetpassword')}}">忘记密码&nbsp;</a>
+        </span>
+        <span class="link-item">
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i>&nbsp;
+            <a href="{{url_for('auth.register')}}">新用户注册&nbsp;</a>
+        </span>
         </div>
     </div>
 </div>
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{message}}
-</div>
-{% endfor %}
+
 {% endblock %}

@@ -5,6 +5,7 @@
 {% endblock %}
 {% block styles %}
 {{super()}}
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <link rel="stylesheet"
       href="{{url_for('static', filename='css/style.css')}}">
@@ -12,7 +13,7 @@
 
 {% block navbar %}
 <div class="navbar navbar-inverse">
-    <div class="container">
+    <div class="">
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">BMS首页</a>
         </div>
@@ -69,10 +70,8 @@
 {% endblock%}
 
 {% block content %}
-<div class ="container">
     {% block page_content %}
     {% endblock %}
-</div>
 {% endblock %}
 
 {% block scripts %}

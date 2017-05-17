@@ -1,0 +1,47 @@
+body{
+    overflow-x:hidden;
+    overflow-y: hidden; 
+	/*background-color: #0c99d5;*/
+    background-image: url(//dp3vjvsy1r9i0.cloudfront.net/resources/background/radialoverlay2.png);
+    background-position: top center;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #1D5D7C;
+    font-family: 'Open Sans', Arial;
+    /*text-shadow: 1px 1px 1px rgba(0, 0, 0, 1);*/
+}
+
+.center-box{
+    position: absolute;
+    /*top:50%;
+    left: 50%;*/
+    /*transform: translate(50%, 50%);*/
+}
+
+.login-form{
+    color: #fff;
+    color: rgba(51, 51, 51, 0.55);
+    background-color: white;
+    padding: 0 2em 2em 2em;
+    border-radius: 1em;
+    border: .6em solid rgba(5, 70, 95, 0.87);
+    width: 40%;
+    transform:translate(80%, 60%);
+}
+.login-form .title{
+    margin: 1em 0;
+    text-shadow: 0px 1px 0px #333;
+}
+.login-form .btn{
+    background-color: #176f98!important;
+    color: white!important;
+    font-weight: bold!important;
+}
+.login-form .link-item{
+    float: right;
+    font-weight: bold;
+    color: grey;
+}
+.login-form .alert{
+    margin: 0!important;
+}
