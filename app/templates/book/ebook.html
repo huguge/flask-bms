@@ -15,7 +15,8 @@
                 </div>
             </div>
             <div class="col-md-8">
-                <h2>{{ book.name }}</h2>                
+                <h2>{{ book.name }}</h2>
+                <p class="sub-text">{{ book.author}}</h5>             
                 <div class ="book-author">
                     <span class="item-name">上传用户</span><a href="{{ url_for("main.user",username=book.upload_user.username)}}">
                     {{book.upload_user.username}}

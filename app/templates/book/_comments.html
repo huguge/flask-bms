@@ -49,7 +49,7 @@
         {% if pagination.pages > 1 %}
         <div class="page-comment">
             <div class="pagination">
-                {{ macros.pagination_widget(pagination,'main.book',fragment='#comment',id=book.id)}}
+                {{ macros.pagination_widget(pagination,url_point,fragment='#comment',id=book.id)}}
             </div>
         </div>
         {% endif %}

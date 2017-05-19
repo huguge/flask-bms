@@ -7,6 +7,9 @@ from flask_login import UserMixin,AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
 import bleach
+
+from jieba.analyse import ChineseAnalyzer
+
 from app import db, login_manager
 import hashlib
 
@@ -145,6 +148,9 @@ ebooks_tags = db.Table('ebooks_tags',
 
 class Ebook(db.Model):
     __tablename__ = 'ebooks'
+    __searchable__ = ['name', 'description','author']
+    # __analyzer__ = SimpleAnalyzer()
+    __analyzer__ =  ChineseAnalyzer() 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     author = db.Column(db.String(32))
@@ -244,6 +250,9 @@ class BookStatus(db.Model):
 
 class Book(db.Model):
     __tablename__ = 'books'
+    __searchable__ = ['name', 'description','author']
+    # __analyzer__ = SimpleAnalyzer()
+    __analyzer__ =  ChineseAnalyzer() 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     author = db.Column(db.String(32))

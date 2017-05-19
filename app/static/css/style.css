@@ -137,11 +137,17 @@ ul.books img.book-list-img{
     width: 160px;
     height: 160px;
 }
-
+ul.books li{
+    margin-bottom: 20px;
+}
+.book-info{
+    line-height: 1.8em;
+}
 .book-info .book-name{
     font-size: 1.3em;
     font-weight: bold; 
 }
+
 .book-info a{
     color:black;
 }

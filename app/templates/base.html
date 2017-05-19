@@ -5,6 +5,7 @@
 {% endblock %}
 {% block styles %}
 {{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <link rel="stylesheet"
@@ -15,19 +16,21 @@
 <div class="navbar navbar-inverse">
     <div class="">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">BMS首页</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+               首页
+            </a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">书籍借阅 <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">图书管理 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="{{ url_for('main.books')}}">书籍列表</a></li>
                     <li><a href="{{ url_for('main.addbook')}}">新增书籍</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">电子书下载 <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">电子书管理 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="{{ url_for('main.ebooks')}}">电子书列表</a></li>
                     {% if current_user.is_authenticated %}
@@ -78,7 +81,7 @@
 {{super()}}
 {{ moment.include_moment() }}
 {{ moment.lang('zh-cn')}}
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script src="{{url_for('static', filename='js/main.js')}}"></script>
 
 {% endblock %}
