@@ -194,6 +194,17 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     description = db.Column(db.Text())
+    @staticmethod   
+    def findOrInsert(tagName):
+        tag = Tag.query.filter_by(name=tagName).first()
+        if tag is not None:
+            return tag
+        else:
+            tag = Tag(name=tagName.strip())
+            db.session.add(tag)
+            db.session.commit()
+            return tag
+
 
 
 
@@ -275,7 +286,7 @@ class Book(db.Model):
     total_count = db.Column(db.Integer,default=0)
     rent_count = db.Column(db.Integer,default=0)
 
-    def cam_rent(self):
+    def can_rent(self):
         return self.total_count-self.rent_count
     def rent_book(self):
         if self.total_count>self.rent_count:

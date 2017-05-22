@@ -1,0 +1,74 @@
+{% extends "base.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{% block styles %}
+{{super()}}
+<style>
+    body{
+        overflow-x:hidden;
+        /*background-color: #0c99d5;*/
+        background-image: url(//dp3vjvsy1r9i0.cloudfront.net/resources/background/radialoverlay2.png);
+        background-position: top center;
+        background-attachment: fixed;
+        background-size: cover;
+        background-color: #1D5D7C;
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+
+<div class ="container">
+    <div class ="row">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{message}}
+        </div>
+        {% endfor %}    
+            <div class="std-form">       
+                <form action method="post" class="form" role="form" enctype="multipart/form-data">
+                <div class="form-group  required"><label class="control-label" for="name">名称</label>
+                    <input class="form-control" id="name" name="name" required="" value="{{form.name.data}}" type="text">
+                    {% for error in form.errors.name %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group "><label class="control-label" for="author">作者</label>
+                    <input class="form-control" id="author" name="author" value="{{form.author.data}}" type="text">
+                    {% for error in form.errors.author %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group "><label class="control-label" for="category">选择类别</label>
+                    {{ form.category(class="form-control") }}
+                    {% for error in form.errors.category %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group "><label class="control-label" for="isbn">图书标签</label>
+                     <input class="form-control" id="tag" name="tag" value="{{tags}}" type="text">
+                    {% for error in form.errors.tag %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group "><label class="control-label" for="description">简短介绍</label>
+                    <textarea class="form-control" id="description" name="description">{{form.description.data}}</textarea>
+                    {% for error in form.errors.description %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group  required"><label class="control-label" for="book_img">上传电子书</label>
+                    <input id="ebook_file" name="ebook_file" type="file">
+                    {% for error in form.errors.ebook_file %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                {{form.hidden_tag()}}
+                <input class="btn btn-default" id="submit" name="submit" value="点击修改" type="submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

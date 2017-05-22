@@ -21,13 +21,24 @@
                 </div>
             </div>
              <div class="col-md-8">
-                <h2>{{ book.name }}</h2>
-                <p class="sub-text">{{ book.author}}</h5>
-                <div class ="book-author">
+                <h2>{{ book.name }}
+                </h2>
+                <ul class="tags">
+                    {% for i in tags %}
+                   <li><a href="{{url_for("main.book_tag",name=i.name)}}" class="tag">{{i.name}}</a></li>
+                    {% endfor %}
+                </ul>
+                <div class="book-info">
+                     <span class="item-name">图书作者</span>{{book.author}}
+                </div>
+
+                <div class ="book-info">
                     <span class="item-name">上传用户</span><a href="{{ url_for("main.user",username=book.upload_user.username)}}">
                     {{book.upload_user.username}}
                     </a>                      
                 </div>
+
+
                 <div class="book-info">
                      <span class="item-name">图书编号</span>{{book.book_number}}
                 </div>
@@ -49,9 +60,15 @@
                 <div class="book-description">
                      <span class="item-name">图书简介</span>{{book.description}}
                 </div>
+                <div class="book-info">
+                     
+ 
+                </div>
                 <div class="order-button">
-                {% if book.cam_rent() %}
-                
+
+                <a href="{{url_for('main.editbook',id=book.id)}}" class="btn btn-info">编辑图书信息</a>
+                <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
+                {% if book.can_rent() %}
                 <button type="button" class="btn btn-info">提交借阅申请</button>
                 {% else %}
                 <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>
@@ -62,4 +79,26 @@
             {% include "book/_comments.html" %}
     </div>
 </div>
+
+
+<div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">删除图书对话框</h4>
+      </div>
+      <div class="modal-body">
+        <p>确定删除图书《{{book.name}}》</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <a href="{{url_for('main.deletebook',id=book.id)}}" class="btn btn-danger">删除图书</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
 {% endblock %}

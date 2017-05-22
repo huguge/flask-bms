@@ -43,28 +43,55 @@ class UploadEbookForm(FlaskForm):
     name = StringField(u'名称', validators=[Length(1,64)])
     author = StringField(u'作者', validators=[Length(1,32)])
     category = SelectField('选择类别',coerce=int)
+    tag = StringField(u'图书标签',render_kw={'placeholder':'请使用;分割'})
     description = TextAreaField(u'简短介绍')
     ebook_file = FileField('上传电子书',validators=[FileRequired(),FileAllowed(['pdf','doc','docx'],'暂时仅支持pdf与word文档')])
     submit = SubmitField(u'点击创建')
     def __init__(self,*args,**kw):
         super(UploadEbookForm,self).__init__(*args,**kw)
         self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]
-class AddBookForm(FlaskForm):
-    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,64)])
+# 上传图书表单
+class EditEBookForm(FlaskForm):
+    name = StringField(u'名称', validators=[Length(1,64)])
     author = StringField(u'作者', validators=[Length(1,32)])
-    publisher = StringField(u'出版社', validators=[Length(1,32)])
-    book_number = StringField(u'编号', validators=[Length(1,32)])
-    isbn = StringField(u'图书ISBN', validators=[Length(1,32)])
+    category = SelectField('选择类别',coerce=int)
+    tag = StringField(u'图书标签',render_kw={'placeholder':'请使用;分割'})
+    description = TextAreaField(u'简短介绍')
+    ebook_file = FileField('上传电子书',validators=[FileAllowed(['pdf','doc','docx'],'暂时仅支持pdf与word文档')])
+    submit = SubmitField(u'点击修改')
+    def __init__(self,*args,**kw):
+        super(EditEBookForm,self).__init__(*args,**kw)
+        self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]
+class BookForm(FlaskForm):
+    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,64)],render_kw={'placeholder':'必填项目'})
+    author = StringField(u'作者', validators=[Length(1,32)],render_kw={'placeholder':'必填项目'})
+    publisher = StringField(u'出版社',render_kw={'placeholder':'无'})
+    book_number = StringField(u'编号',render_kw={'placeholder':'无'})
+    isbn = StringField(u'图书ISBN',render_kw={'placeholder':'无'})
+    tag = StringField(u'图书标签',render_kw={'placeholder':'请使用;分割'})
     total_count = IntegerField(u'图书数量',default=0)
     category = SelectField('选择类别',coerce=int)
     status = SelectField(u'选择图书状态',coerce=int)
-    description = TextAreaField(u'简短介绍')
+    description = TextAreaField(u'简短介绍',render_kw={'placeholder':'无'})
     book_img = FileField('上传封面',validators=[FileRequired(),FileAllowed(['jpg','png'],'暂时仅支持jpg与png文档')])
+    def __init__(self,*args,**kw):
+        super(BookForm,self).__init__(*args,**kw)
+        self.status.choices = [(c.id,c.name) for c in BookStatus.query.order_by(BookStatus.name).all()] 
+        self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]   
+class AddBookForm(BookForm):
+    # book_img = FileField('上传封面',validators=[FileRequired(),FileAllowed(['jpg','png'],'暂时仅支持jpg与png文档')])
     submit = SubmitField(u'点击创建')
     def __init__(self,*args,**kw):
         super(AddBookForm,self).__init__(*args,**kw)
-        self.status.choices = [(c.id,c.name) for c in BookStatus.query.order_by(BookStatus.name).all()] 
-        self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]   
+
+class EditBookForm(BookForm):
+    book_img = FileField('上传封面',validators=[FileAllowed(['jpg','png'],'暂时仅支持jpg与png文档')])
+    submit = SubmitField(u'点击修改')
+    def __init__(self,*args,**kw):
+        super(EditBookForm,self).__init__(*args,**kw)
+
+
+
 class CommentForm(FlaskForm):
     body = TextAreaField('',validators=[Required()])
     submit = SubmitField('提交评论')
