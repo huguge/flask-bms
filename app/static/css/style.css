@@ -28,7 +28,11 @@ a{
     color: white;
     font-weight: bold;
 }
-
+#myOrderModal  .modal-header{
+    background-color: #5bc0de;
+    color: white;
+    font-weight: bold;
+}
 
 /* Tags */
 .tags {
@@ -206,6 +210,14 @@ ul.books{
     margin: 0 0 0 4px;
     padding: 0;
 }
+.page-info{
+    margin-bottom: 2em;
+}
+.page-info .book-big-img{
+    max-width: 90%;
+    padding: 1em;
+    box-shadow: 0.1em 0.4em 0.1em 0.1em rgb(199, 199, 199);
+}
 ul.books img.book-list-img{
     width: 160px;
     height: 160px;
@@ -215,6 +227,9 @@ ul.books li{
 }
 .book-info{
     line-height: 1.8em;
+}
+.book-img{
+    margin-top: 1em;
 }
 .book-info .book-name{
     font-size: 1.3em;

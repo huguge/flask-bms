@@ -307,7 +307,7 @@ class BookRent(db.Model):
     rent_person_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     rent_book_id =  db.Column(db.Integer, db.ForeignKey('books.id'))
     rent_date = db.Column(db.DateTime(), default=datetime.utcnow)
-    rent_time = db.Column(db.Integer,default=7)
+    rent_time = db.Column(db.Integer,default=30)
 
 login_manager.anonymous_user = AnonymousUser
 

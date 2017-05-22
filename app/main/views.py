@@ -9,7 +9,7 @@ import random
 # from manage import config
 from app.main import main 
 from app import db
-from app.models import User, Ebook, Comment, Permission,Book,Tag
+from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent
 from app.lib import super_admin_require
 from app.main.forms import EditProfileForm, UploadEbookForm, CommentForm, AddBookForm, EditBookForm, EditEBookForm
 
@@ -220,11 +220,6 @@ def editebook(id):
         tags_list.append(tag.name)
     return render_template('book/edit_ebook.html', form=form, tags=';'.join(tags_list))
 
-
-
-
-
-
 @main.route('/book/<int:id>/delete', methods=['GET'])
 @login_required
 def deletebook(id):
@@ -348,7 +343,7 @@ def ebook_add_tag(id):
         Tag.query.filter_by(name=tag).all()
 
 @main.route('/ebook/tag/<string:name>', methods=['GET'])
-# @login_required
+@login_required
 def ebook_tag(name):
     page = request.args.get('page', 1, type=int)
     pagination =  Tag.query.filter_by(name=name).first().ebooks.order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
@@ -356,10 +351,29 @@ def ebook_tag(name):
     return render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
 
 @main.route('/book/tag/<string:name>', methods=['GET'])
-# @login_required
+@login_required
 def book_tag(name):
     page = request.args.get('page', 1, type=int)
     pagination = Tag.query.filter_by(name=name).first().books.order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
     books_list = pagination.items    
     return render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
-       
+
+@main.route('/book/rent/<int:id>',methods=['GET'])
+@login_required
+def rent_book(id):
+    book = Book.query.get_or_404(id)
+    book.rent_count=book.rent_count+1
+    if book.rent_count>book.total_count:
+        flash('图书借阅失败,库存数量暂时不够')
+        return redirect(url_for('main.book',id=book.id))
+    db.session.add(book)
+
+    # 发送邮件通知图书管理员
+    # 更新book-rent表
+    bookrent = BookRent()
+    bookrent.rent_user = current_user._get_current_object()
+    bookrent.book = book
+    db.session.add(bookrent)
+    db.session.commit()
+    flash('图书借阅申请已成功提交')
+    return redirect(url_for('main.book',id=book.id))
