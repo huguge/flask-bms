@@ -14,7 +14,13 @@
 <div class ="container">
     <div class ="row">
         <div class="page-header col-md-12">
+            {% if tag_name %}
+            <ul class="tags inline-block">
+                 <li><a class="tag">{{tag_name}}</a></li> 
+            </ul>
+            {% else %}
             <h2>电子图书列表</h2>
+            {% endif %}
             <div class='search-box'>
                 <form class='search-form'>
                     <input class='form-control' placeholder='搜索图书' type='text' id="search-term">

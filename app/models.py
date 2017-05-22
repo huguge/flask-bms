@@ -164,7 +164,7 @@ class Ebook(db.Model):
     comments = db.relationship('Comment', backref='ebook', lazy='dynamic')
     uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
-    tags = db.relationship('Tag', secondary=ebooks_tags,backref=db.backref('ebooks', lazy=True))
+    tags = db.relationship('Tag', secondary=ebooks_tags,backref=db.backref('ebooks',lazy='dynamic'))
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -278,7 +278,7 @@ class Book(db.Model):
     comments = db.relationship('Comment', backref='book', lazy='dynamic')
     uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
-    tags = db.relationship('Tag', secondary=books_tags,backref=db.backref('books', lazy=True))
+    tags = db.relationship('Tag', secondary=books_tags,backref=db.backref('books', lazy="dynamic"))
     rent_events = db.relationship('BookRent', backref='book', lazy='dynamic')
     comments = db.relationship('Comment', backref='book', lazy='dynamic')
     

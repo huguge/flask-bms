@@ -23,6 +23,13 @@ a{
     margin-top: 0px!important;
 }
 
+#myDeleteModal  .modal-header{
+    background-color: #d43f3a;
+    color: white;
+    font-weight: bold;
+}
+
+
 /* Tags */
 .tags {
   list-style: none;
@@ -34,7 +41,9 @@ a{
 .tags li {
   float: left; 
 }
-
+.inline-block{
+    display: inline-block;
+}
 .tag {
   background: #eee;
   border-radius: 3px 0 0 3px;

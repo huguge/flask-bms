@@ -350,9 +350,16 @@ def ebook_add_tag(id):
 @main.route('/ebook/tag/<string:name>', methods=['GET'])
 # @login_required
 def ebook_tag(name):
-    pass
+    page = request.args.get('page', 1, type=int)
+    pagination =  Tag.query.filter_by(name=name).first().ebooks.order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
+    books_list = pagination.items
+    return render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
 
 @main.route('/book/tag/<string:name>', methods=['GET'])
 # @login_required
 def book_tag(name):
-    pass
+    page = request.args.get('page', 1, type=int)
+    pagination = Tag.query.filter_by(name=name).first().books.order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
+    books_list = pagination.items    
+    return render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
+       
