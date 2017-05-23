@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*- 
 from flask import render_template, session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
+from sqlalchemy.sql import text
 from flask_login import login_required,current_user
 from werkzeug.utils import secure_filename
 import urllib
@@ -101,7 +102,10 @@ def addbook():
 @login_required
 def book(id):
     book = Book.query.get_or_404(id)
+    s = text("select users.id,users.username,users.avatar_hash from book_rent inner join users where book_rent.rent_person_id=users.id and book_rent.active=1 and book_rent.rent_book_id=:x")
+    book_rent_users = db.engine.execute(s, x=id).fetchall()
     form = CommentForm()
+    userlist = BookRent.query.filter_by(rent_book_id=4,active=1).first().rent_user
     if form.validate_on_submit():
         comment = Comment(body=form.body.data, book=book, author=current_user._get_current_object())
         db.session.add(comment)
@@ -125,6 +129,7 @@ def book(id):
                            url_point = 'main.book',
                            form=form,
                            tags=tags,
+                           book_rent_users=book_rent_users,
                            comments=comments)
 
 @main.route('/book/<int:id>/edit', methods=['POST','GET'])
@@ -377,3 +382,18 @@ def rent_book(id):
     db.session.commit()
     flash('图书借阅申请已成功提交')
     return redirect(url_for('main.book',id=book.id))
+
+
+@main.route('/book/return/<int:id>/<int:user_id>',methods=['GET'])
+@login_required
+def return_book(id,user_id):
+    if current_user.id == user_id or current_user.can(Permission.ADMIN_CONTENT):
+        try:
+            bookrent = BookRent.query.filter_by(rent_person_id=user_id,rent_book_id=id,active=1).first()
+            bookrent.active =0
+            db.session.add(bookrent)
+            db.session.commit()
+            flash('图书归还申请已成功提交')
+        except expression as identifier:
+            flash('服务器暂时无法提交信息，请稍后再试')
+    return redirect(url_for('main.book',id=id))

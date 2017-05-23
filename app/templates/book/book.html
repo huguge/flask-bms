@@ -56,23 +56,48 @@
                 </div>    
                 <div class="book-info">
                      <span class="item-name">已借出数量</span>{{book.rent_count}}本
+                     {% for user in book_rent_users %}
+                        <!--判断是否是管理员，如果不是的话则跳转到用户profile页面，否则弹出管理页面处理已借出-->
+                        <a data-toggle="tooltip"  title="{{user[1]}}" href="{{url_for("main.user",username=user[1])}}">
+                            <img class="img-rounded" src="http://www.gravatar.com/avatar/{{user[2]}}?s=18&amp;d=identicon&amp;r=g"/>
+                            &nbsp;
+                        </a>
+
+                        <a data-toggle="modal" data-target="#myReturnModal_{{user[0]}}">
+                            <img class="img-rounded" src="http://www.gravatar.com/avatar/{{user[2]}}?s=18&amp;d=identicon&amp;r=g"/>
+                            &nbsp;
+                        </a>
+                        <div class="modal fade" id="myReturnModal_{{user[0]}}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">归还图书对话框</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>是否确认归还图书《{{book.name}}》({{user[1]}})?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                    <a href="{{url_for('main.return_book',id=book.id,user_id=user[0])}}" class="btn btn-info">归还图书</a>
+                                </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                         </div><!-- /.modal -->
+
+                     {% endfor %}
                 </div>
                 <div class="book-description">
                      <span class="item-name">图书简介</span>{{book.description}}
                 </div>
-                <div class="book-info">
-                     
- 
-                </div>
                 <div class="order-button">
-
-                <a href="{{url_for('main.editbook',id=book.id)}}" class="btn btn-info">编辑图书信息</a>
-                <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
-                {% if book.can_rent() %}
-                <a data-toggle="modal" data-target="#myOrderModal" class="btn btn-info">提交借阅申请</a>
-                {% else %}
-                <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>
-                {% endif %}
+                    <a href="{{url_for('main.editbook',id=book.id)}}" class="btn btn-info">编辑图书信息</a>
+                    <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
+                    {% if book.can_rent() %}
+                    <a data-toggle="modal" data-target="#myOrderModal" class="btn btn-info">提交借阅申请</a>
+                    {% else %}
+                    <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -116,5 +141,6 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
 
 {% endblock %}

@@ -6,7 +6,7 @@ from flask import request
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from app import create_app,db
-from app.models import User,Role,BookStatus,Category,Book,Ebook
+from app.models import User,Role,BookStatus,Category,Book,Ebook,BookRent
 import flask_whooshalchemyplus as whooshalchemy
 
 reload(sys)
@@ -26,7 +26,7 @@ config = app.config
 manager = Manager(app)
 migrate = Migrate(app,db)
 def make_shell_context():
-    return dict(app=app,db=db,Role=Role,User=User,Book=Book,Ebook=Ebook)
+    return dict(app=app,db=db,Role=Role,User=User,Book=Book,Ebook=Ebook,BookRent=BookRent)
 manager.add_command("shell",Shell(make_context=make_shell_context))
 manager.add_command("db",MigrateCommand)
 
