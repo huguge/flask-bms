@@ -55,7 +55,7 @@
                      <span class="item-name">库存总量</span>{{book.total_count}}本
                 </div>    
                 <div class="book-info">
-                     <span class="item-name">已借出数量</span>{{book.rent_count}}本
+                     <span class="item-name">当前借阅人</span>
                      {% for user in book_rent_users %}
                         <!--判断是否是管理员，如果不是的话则跳转到用户profile页面，否则弹出管理页面处理已借出-->
                         <a data-toggle="tooltip"  title="{{user[1]}}" href="{{url_for("main.user",username=user[1])}}">

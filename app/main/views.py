@@ -35,9 +35,11 @@ def admin():
 @login_required
 def user(username):
     u = User.query.filter_by(username=username).first()
+    sql = text("select books.* from book_rent inner join books where book_rent.rent_person_id=:x and book_rent.active=1 and book_rent.rent_book_id=books.id")
+    book_rent_list = db.engine.execute(sql, x=u.id).fetchall()
     if u is None:
         abort(404)
-    return render_template('user/profile.html', user=u)
+    return render_template('user/profile.html', user=u,book_rent_list=book_rent_list)
 
 @main.route('/edit_profile', methods=['POST','GET'])
 @login_required

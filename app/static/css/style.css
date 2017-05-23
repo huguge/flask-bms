@@ -1,6 +1,7 @@
 body{
     overflow-x:hidden;
     font-family: 'Hiragino Sans GB','Microsoft Yahei',Arial,sans-serif;
+    padding-top: 70px;
 }
 a{
     text-decoration:none;
@@ -31,6 +32,13 @@ a{
 #myOrderModal  .modal-header{
     background-color: #5bc0de;
     color: white;
+    font-weight: bold;
+}
+
+.small_book_list img{
+    max-height: 3em;
+}
+.bold{
     font-weight: bold;
 }
 /*tooltip*/
@@ -225,7 +233,7 @@ span.tooltip:after {
 
 .item-name{
     display: inline-block;
-    width: 6em;
+    width: 8em;
     font-weight: bold;
     color: rgba(0, 0, 0, 0.6);
     line-height: 1.6em;

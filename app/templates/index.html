@@ -1,8 +1,55 @@
 {% extends "base.html"%}
+{% block styles %}
+{{super()}}
+<style>
+    body,html{
+      height: 100%;
+      overflow-x:hidden;
+    }
+    body{
+        padding-top: 0!important;
+    }
+    .background{
+        /*background-color: #0c99d5;*/
+        background-image: url("/static/images/home.jpg");
+        height: 100%;
+        opacity: .8;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    .vertical-align{
+        position: relative;
+        top:50%;
+        transform: translateY(-50%);
+    }
+    .vertical-align h2{
+        font-weight: bold;
+        font-size: 4.5em;
+        font-family: monospace;
+        color: rgb(255, 255, 255);
+        text-shadow: 1px 1px 0px grey;
+    }
+    .vertical-align .btn-info-x{
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.15);
+        border-color: #f2f4f5;
+        border-radius: 0px;
+    }
+    .vertical-align .btn-info-x:hover{
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.55);
+        border-color: #f2f4f5;
+    }
+
+</style>
+{% endblock %}
 {% block page_content %}
-<div class ="container">
-    <div class ="row">
+<div class ="background">
+    <div class ="container vertical-align">
         <h2>欢迎访问BMS系统</h2>
+        <a class="btn btn-info-x" href="{{ url_for('auth.login') }}">用户登入</a>
+        <a class="btn btn-info-x" href="{{ url_for('auth.register') }}">用户注册</a>
     </div>
 </div>
 {% endblock %}

@@ -3,21 +3,43 @@
 {% block page_content %}
 <div class ="container">
     <div class ="row">
-        <div class="page-header">
-            <h2>{{ user.username }}</h2>
+        <div class="col-md-3">
             <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
         </div>
-        {% if current_user.is_super_admin() %}
-        <p><a href="mailto:{{user.email}}">{{user.email}}</a></p>
-        {% endif %}
-        {% if user.about_me %}
-        <p>{{user.about_me}}</p>
-        {% endif %}
-        <p>注册时间:{{moment(user.created_at).format('L')}}</p>
-        <p>上次登入时间：{{moment(user.last_seen).fromNow()}}</p>
-        {% if user == current_user %}
-          <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">编辑个人页面</a>
-        {% endif %}
+        <div class="col-md-9">
+            <div class="page-header">
+                <h2>{{ user.username }}</h2>
+            </div>
+            <div>
+                {% if current_user.is_super_admin() %}
+                <p><a href="mailto:{{user.email}}">{{user.email}}</a></p>
+                {% endif %}
+                {% if user.about_me %}
+                <p>{{user.about_me}}</p>
+                {% endif %}
+                <div class="book-info">
+                     <span class="item-name">注册时间</span>{{moment(user.created_at).format('L')}}
+                     </span>
+                </div>
+                <div class="book-info">
+                     <span class="item-name">上次登入时间</span>{{moment(user.last_seen).fromNow()}}
+                     </span>
+                </div>
+                <div class="book-info small_book_list">
+                     <span class="item-name">当前借阅书籍</span>
+                    {% for book in book_rent_list %}
+                            <span><a data-toggle="tooltip"  title="{{book.name}}" href="{{url_for("main.book",id=book.id)}}">
+                                <img class="img-rounded" src="{{book.image_path}}"/>
+                            </a></span>
+                    {% endfor %}
+                </div>
+                <br/>
+                {% if user == current_user %}
+                <a class="btn btn-info" href="{{ url_for('main.edit_profile') }}">编辑个人页面</a>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}
