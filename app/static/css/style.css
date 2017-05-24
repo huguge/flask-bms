@@ -24,6 +24,12 @@ a{
     margin-top: 0px!important;
 }
 
+.info {
+    background-color: #5bc0de;
+    color: white;
+    font-weight: bold;
+}
+
 #myDeleteModal  .modal-header{
     background-color: #d43f3a;
     color: white;

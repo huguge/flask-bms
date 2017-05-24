@@ -4,6 +4,7 @@
       <label>评论区</label>
     </div>
     <div class="actionBox">
+        {% if current_user.is_authenticated %}  
         <form action method="post" class="form-inline" role="form">
             <div class="form-group">
                 <input class="form-control" type="text" name="body" placeholder="填写评论信息" required/>
@@ -13,6 +14,7 @@
             </div>
             {{form.hidden_tag()}}
         </form>
+        {% endif %}
          <ul class="commentList">
             {% for comment in comments %}
             <li>

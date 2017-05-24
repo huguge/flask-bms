@@ -1,0 +1,43 @@
+{% extends "base.html"%}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('static', filename='css/sidebar.css')}}">
+{% endblock %}
+{% block page_content %}
+<div id="wrapper" class="toggled">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="{{url_for("admin.admin_dashboard")}}">
+                        BMS管理员界面
+                    </a>
+                </li>
+                <li>
+                    <a href="{{url_for("admin.admin_user")}}">用户管理</a>
+                </li>
+                <li>
+                    <a href="{{url_for("admin.admin_config")}}">配置管理</a>
+                </li>
+                <li>
+                    <a href="{{url_for("admin.admin_about")}}">关于系统</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        {% block sub_page_content %}
+        {% endblock %}
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+{% endblock %}

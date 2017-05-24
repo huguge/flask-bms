@@ -18,18 +18,12 @@ from config import config
 
 from app.works import getImageFromPdf
 from app.lib import color_picker
+
 @main.route('/')
 def index():
     return render_template('index.html',
         app_name = 'Flask-BMS',
         username = session.get('username'))
-
-@main.route('/admin')
-@login_required
-@super_admin_require
-def admin():
-    return render_template('admin.html', app_name='Flask-BMS')
-
 
 @main.route('/user/<username>')
 @login_required
@@ -56,7 +50,6 @@ def edit_profile():
     return render_template('user/edit_profile.html', form=form)
 
 @main.route('/books')
-@login_required
 def books():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search')
@@ -101,7 +94,6 @@ def addbook():
     return render_template('book/add_book.html', form=form)
 
 @main.route('/book/<int:id>', methods=['GET', 'POST'])
-@login_required
 def book(id):
     book = Book.query.get_or_404(id)
     s = text("select users.id,users.username,users.avatar_hash from book_rent inner join users where book_rent.rent_person_id=users.id and book_rent.active=1 and book_rent.rent_book_id=:x")
@@ -128,6 +120,7 @@ def book(id):
                            pagination=pagination,
                            can_write_comment=can_write_comment,
                            book=book,
+                           Permission=Permission,
                            url_point = 'main.book',
                            form=form,
                            tags=tags,
@@ -236,7 +229,6 @@ def deletebook(id):
     return redirect(url_for('main.books'))
 
 @main.route('/ebooks',methods=['GET','POST'])
-@login_required
 def ebooks():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search','')
@@ -287,7 +279,6 @@ def upload_ebooks():
     return render_template('book/upload_ebook.html', form=form)
 
 @main.route('/ebook/<int:id>', methods=['GET', 'POST'])
-@login_required
 def ebook(id):
     ebook = Ebook.query.get_or_404(id)
     form = CommentForm()
@@ -313,12 +304,12 @@ def ebook(id):
                            url_point = 'main.ebook',
                            can_write_comment=can_write_comment,
                            book=ebook,
+                           Permission=Permission,
                            tags=tags,
                            form=form,
                            comments=comments)
 
 @main.route('/download/<string:file_type>/<int:id>/', methods=['GET'])
-@login_required
 def download(file_type, id):
     if file_type == 'ebook':
         ebook = Ebook.query.get_or_404(id)
@@ -335,7 +326,7 @@ def download(file_type, id):
     else:
         abort(404)
 @main.route('/ebook/tag/<int:id>', methods=['POST'])
-# @login_required
+@login_required
 def ebook_add_tag(id):
     tag = request.args.get('tag','')
     if tag=='' or tag == None:
@@ -350,7 +341,6 @@ def ebook_add_tag(id):
         Tag.query.filter_by(name=tag).all()
 
 @main.route('/ebook/tag/<string:name>', methods=['GET'])
-@login_required
 def ebook_tag(name):
     page = request.args.get('page', 1, type=int)
     pagination =  Tag.query.filter_by(name=name).first().ebooks.order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
@@ -358,7 +348,6 @@ def ebook_tag(name):
     return render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
 
 @main.route('/book/tag/<string:name>', methods=['GET'])
-@login_required
 def book_tag(name):
     page = request.args.get('page', 1, type=int)
     pagination = Tag.query.filter_by(name=name).first().books.order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])

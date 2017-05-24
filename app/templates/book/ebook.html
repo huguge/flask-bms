@@ -45,8 +45,10 @@
                      <span class="item-name">图书简介</span>{{book.description}}
                 </div>
                 <div class="order-button">
+                    {% if current_user.can(Permission.ADMIN_CONTENT) %}
                     <a href="{{url_for('main.editebook',id=book.id)}}" class="btn btn-info">编辑图书信息</a>
                     <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
+                     {% endif %}
                     <a class="btn btn-info" href={{ url_for('main.download',file_type='ebook',id=book.id)}}>下载</a>
                 </div>
             </div>

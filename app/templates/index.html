@@ -48,8 +48,13 @@
 <div class ="background">
     <div class ="container vertical-align">
         <h2>欢迎访问BMS系统</h2>
+        {% if current_user.is_authenticated %}
+        <a class="btn btn-info-x" href="{{ url_for('main.books') }}">图书列表</a>
+        <a class="btn btn-info-x" href="{{ url_for('main.ebooks') }}">电子书列表</a>
+        {% else %}
         <a class="btn btn-info-x" href="{{ url_for('auth.login') }}">用户登入</a>
         <a class="btn btn-info-x" href="{{ url_for('auth.register') }}">用户注册</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -58,11 +58,8 @@
                      <span class="item-name">当前借阅人</span>
                      {% for user in book_rent_users %}
                         <!--判断是否是管理员，如果不是的话则跳转到用户profile页面，否则弹出管理页面处理已借出-->
-                        <a data-toggle="tooltip"  title="{{user[1]}}" href="{{url_for("main.user",username=user[1])}}">
-                            <img class="img-rounded" src="http://www.gravatar.com/avatar/{{user[2]}}?s=18&amp;d=identicon&amp;r=g"/>
-                            &nbsp;
-                        </a>
 
+                        {% if current_user.can(Permission.ADMIN_CONTENT) %}
                         <a data-toggle="modal" data-target="#myReturnModal_{{user[0]}}">
                             <img class="img-rounded" src="http://www.gravatar.com/avatar/{{user[2]}}?s=18&amp;d=identicon&amp;r=g"/>
                             &nbsp;
@@ -70,12 +67,12 @@
                         <div class="modal fade" id="myReturnModal_{{user[0]}}" tabindex="-1" role="dialog">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
-                                <div class="modal-header">
+                                <div class="modal-header info">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                     <h4 class="modal-title">归还图书对话框</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <p>是否确认归还图书《{{book.name}}》({{user[1]}})?</p>
+                                    <p>是否确认用户<b>{{user[1]}}</b>已归还图书《{{book.name}}》?</p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -84,16 +81,24 @@
                                 </div><!-- /.modal-content -->
                             </div><!-- /.modal-dialog -->
                          </div><!-- /.modal -->
-
+                         {% else %}
+                        <a data-toggle="tooltip"  title="{{user[1]}}" href="{{url_for("main.user",username=user[1])}}">
+                            <img class="img-rounded" src="http://www.gravatar.com/avatar/{{user[2]}}?s=18&amp;d=identicon&amp;r=g"/>
+                            &nbsp;
+                        </a>
+                         {% endif %}
                      {% endfor %}
                 </div>
                 <div class="book-description">
                      <span class="item-name">图书简介</span>{{book.description}}
                 </div>
                 <div class="order-button">
+                    {% if current_user.can(Permission.ADMIN_CONTENT) %}
                     <a href="{{url_for('main.editbook',id=book.id)}}" class="btn btn-info">编辑图书信息</a>
                     <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
-                    {% if book.can_rent() %}
+                    {% endif %}
+
+                    {% if book.can_rent() and cu%}
                     <a data-toggle="modal" data-target="#myOrderModal" class="btn btn-info">提交借阅申请</a>
                     {% else %}
                     <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>

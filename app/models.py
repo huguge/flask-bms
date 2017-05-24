@@ -22,6 +22,7 @@ class Permission:
     FOLLOW = 0x01
     WRITE_COMMENT = 0x02
     WRITE_ARTICLES =0x04
+    UPLOAD_EBook = 0x08
     ADMIN_CONTENT = 0x40
     ADMIN_USER = 0x80
 
@@ -36,8 +37,8 @@ class Role(db.Model):
     @staticmethod
     def insert_default():
         roles = {
-            'User':(Permission.FOLLOW|Permission.WRITE_ARTICLES|Permission.WRITE_COMMENT,True),
-            'ContentAdmin':(Permission.FOLLOW|Permission.WRITE_ARTICLES|Permission.WRITE_COMMENT|Permission.ADMIN_CONTENT,False),
+            'User':(Permission.FOLLOW|Permission.WRITE_ARTICLES|Permission.WRITE_COMMENT|Permission.UPLOAD_EBook,True),
+            'ContentAdmin':(Permission.FOLLOW|Permission.WRITE_ARTICLES|Permission.UPLOAD_EBook|Permission.WRITE_COMMENT|Permission.ADMIN_CONTENT,False),
             'SuperAdmin':(0xff,False)
         }
         for r in roles:
@@ -78,6 +79,7 @@ class User(db.Model,UserMixin):
         if self.role is None:
             if self.email == current_app.config['FLASK_BMS_ADMIN']:
                 self.role = Role.query.filter_by(permissions=0xff).first()
+                self.confirmed = True
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:

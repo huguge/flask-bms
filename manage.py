@@ -13,6 +13,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 app = create_app(os.getenv('FLASK_BMS_ENV') or 'default')
+
 whooshalchemy.whoosh_index(app, Book)
 whooshalchemy.whoosh_index(app, Ebook)
 if os.getenv('FLASK_BMS_ENV') != 'production':
@@ -22,6 +23,8 @@ if os.getenv('FLASK_BMS_ENV') != 'production':
             return response
         response.cache_control.max_age = 0
         return response
+
+
 config = app.config
 manager = Manager(app)
 migrate = Migrate(app,db)
@@ -44,6 +47,17 @@ def test():
     import unittest
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+@manager.command
+def deploy():
+    from flask_migrate import upgrade
+    from app.models import Role,Category,BookStatus,User
+    upgrade()
+    for i in [Role,Category,BookStatus,User]:
+        i.insert_default()
+    print 'insert default data into database success'    
+
+
 
 if __name__ == '__main__':
     manager.run()
