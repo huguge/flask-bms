@@ -14,6 +14,15 @@ a{
     margin-bottom: 10px;
     display: inline-block;
 }
+
+.user-list .fa{
+    color: lightseagreen;
+    font-size: 2em;
+    text-shadow: 1px 1px 1px #ccc;
+}
+.user-list .toggle-user-active{
+    cursor: pointer;
+}
 .center-box{
     position: absolute;
     /*top:50%;
@@ -29,7 +38,19 @@ a{
     color: white;
     font-weight: bold;
 }
-
+.info-box{
+    width: 90%;
+    background-color: #005986;
+    color: white;
+    padding: 1em 1.5em;
+}
+.info-box h2{
+    font-size: 40px;
+    font-family: Courier New, Courier, monospace;
+}
+.info-box span{
+    color:lightgrey;
+}
 #myDeleteModal  .modal-header{
     background-color: #d43f3a;
     color: white;

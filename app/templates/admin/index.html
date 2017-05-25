@@ -6,12 +6,119 @@
 <div id="page-content-wrapper">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-12">
-                <h1>dashboard展示页面</h1>
+            <div class="col-md-10">
+                <!--<h1>dashboard展示页面</h1>-->
+                <div class="col-md-3">
+                    <div class="info-box">
+                        <i class="fa fa-users" aria-hidden="true"></i>&nbsp;<span>用户总数</span>
+                        <h2>{{count[0]}}</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-box">
+                        <i class="fa fa-book" aria-hidden="true"></i>&nbsp;<span>图书</span>
+                        <h2>{{count[1]}}</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="info-box">
+                        <i class="fa fa-share" aria-hidden="true"></i>&nbsp;<span>已借阅书籍</span>
+                        <h2>{{count[3]}}</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-box">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;<span>电子书</span>
+                        <h2>{{count[2]}}</h2>
+                    </div>
+                </div>
             </div>
+
         </div>
+         <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-4 chart-box">
+                        <h4>下载最多的图书统计</h4>
+                        <canvas id="best-download-books-chart" width="400" height="300"></canvas>
+                    </div>
+                    <div class="col-md-4">
+                        <canvas id="best-download-users-chart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+         </div>
     </div>
 </div>
 <!-- /#page-content-wrapper -->
-
 {% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script>
+var ctx = document.getElementById("best-download-books-chart").getContext("2d");
+var data = {
+    type: 'bar',
+    data: {
+        labels: {{ best_download_books_name | safe}},
+        datasets: [{
+            label: '下载最多的图书排行',
+            data: {{ best_download_books_downloads | safe}},
+            borderWidth: 1
+        }]
+    },
+    options: {
+        legend: {
+            display: false,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    stepSize:1
+                }
+            }],
+             xAxes: [{
+                display: false
+            }]
+        }
+    }
+}
+var best_download_chart = new Chart(ctx,data);
+
+var ctx = document.getElementById("best-download-users-chart").getContext("2d");
+var data = {
+    type: 'bar',
+    data: {
+        labels: {{ best_download_user_name | safe}},
+        datasets: [{
+            label: '下载最多的用户排行',
+            data: {{ best_download_users_downloads | safe}},
+            borderWidth: 1
+        }]
+    },
+    options: {
+        legend: {
+            display: false,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    stepSize:1
+                }
+            }],
+             xAxes: [{
+                display: false
+            }]
+        }
+    }
+}
+var best_download_chart = new Chart(ctx,data);
+
+
+
+
+</script>
+{% endblock%}

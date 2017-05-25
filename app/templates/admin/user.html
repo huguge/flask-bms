@@ -5,14 +5,78 @@
 
 <div id="page-content-wrapper">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>系统开发说明</h1>
-                <p>当前开发版本v0.1</p>
-                <p>开发框架:<code>python flask</code>.</p>
-                <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">列表开关</a>
-            </div>
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{message}}
         </div>
+        {% endfor %}
+            <div class ="row">
+                <div class="page-header col-md-10">
+                    <h2>用户列表</h2>
+                    <div class='search-box'>
+                        <form class='search-form'>
+                            <input class='form-control' placeholder='搜索用户' type='text' id="search-term">
+                            <button class='btn btn-link search-btn' id="search-btn">
+                                <i class='glyphicon glyphicon-search'></i>
+                            </button>
+                        </form>
+                    </div>
+                </div> 
+                <div class = "page-content col-md-10 user-list">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                            <th>用户ID</th>
+                            <th>用户名</th>
+                            <th>真实姓名</th>
+                            <th>用户邮箱帐号</th>
+                            <th>权限变更</th>
+                            <th>是否已激活</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                                <tr>
+                                   {% for user in users %}
+                                   <tr>
+                                        <td scope="row">{{user.id}}</td>
+                                        <td>
+                                            <a href="{{ url_for("main.user",username=user.username)}}">
+                                                {{user.username}}
+                                            </a>
+                                        </td>
+                                        {% if user.name is none %}
+                                        <td>暂无信息</td>
+                                        {% else %}
+                                        <td>{{user.name}}</td>
+                                        {% endif%}
+                                        <td>{{user.email}}</td>
+
+                                        <td><select style="width: 70%;" onChange="window.location.href=this.value" id="user-auth-change" class="form-control" value="{{user.id}}">
+                                            {% for role in roles %}
+                                                {% if user.role_id == role.id %}
+                                                <option value="{{ url_for("admin.change_user_auth",id=user.id,role_id=role.id)}}" selected="selected">{{role.name}}</option>
+                                                {% else %}
+                                                <option value="{{ url_for("admin.change_user_auth",id=user.id,role_id=role.id)}}" >{{role.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select></td>
+                                        {% if user.confirmed %}
+                                        <td><a href="{{ url_for("admin.toggle_user_confirmed",id=user.id)}}" data-id="{{user.id}}"><i class="fa fa-toggle-on" aria-hidden="true"></i></a></td>
+                                        {% else %}
+                                        <td><a href="{{ url_for("admin.toggle_user_confirmed",id=user.id)}}" data-id="{{user.id}}"><i class="fa fa-toggle-off" aria-hidden="true"></i></i></td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                            </tbody>
+                    </table>
+                    {% if pagination.pages > 1 %}
+                    <div class="pagination">
+                        {{ macros.pagination_widget(pagination,'main.ebooks')}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
     </div>
 </div>
 <!-- /#page-content-wrapper -->

@@ -13,11 +13,11 @@ from app import db
 from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent
 from app.lib import super_admin_require
 from app.main.forms import EditProfileForm, UploadEbookForm, CommentForm, AddBookForm, EditBookForm, EditEBookForm
-
 from config import config
-
 from app.works import getImageFromPdf
 from app.lib import color_picker
+from app.works.jd_imge_scrapy import download_images_from_bookname,get_detail_info
+
 
 @main.route('/')
 def index():
@@ -87,7 +87,12 @@ def addbook():
         book.publisher = form.publisher.data or u'无'
         _, file_type = os.path.splitext(file_name)
         book.image_path = url_for('static', filename='uploads/books/' + file_name)
-
+        try:
+            id,img_200_200_path,img_350_350_path=download_images_from_bookname(form.name.data,config['default'].UPLOAD_PATH+'/books/')
+            book.description =  get_detail_info(id)[0]
+            book.image_path = img_200_200_path or img_350_350_path
+        except Exception as e:
+            raise e
         db.session.add(book)
         flash('新增图书成功')
         return redirect(url_for('main.addbook'))

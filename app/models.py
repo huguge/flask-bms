@@ -54,6 +54,9 @@ class Role(db.Model):
 
 class User(db.Model,UserMixin):
     __tablename__ = 'users'
+    __searchable__ = ['username', 'email','name','about_me']
+    # __analyzer__ = SimpleAnalyzer()
+    __analyzer__ =  ChineseAnalyzer() 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(64),unique=True,index=True)

@@ -16,6 +16,7 @@ app = create_app(os.getenv('FLASK_BMS_ENV') or 'default')
 
 whooshalchemy.whoosh_index(app, Book)
 whooshalchemy.whoosh_index(app, Ebook)
+whooshalchemy.whoosh_index(app, User)
 if os.getenv('FLASK_BMS_ENV') != 'production':
     @app.after_request
     def app_after_request(response):
@@ -23,7 +24,7 @@ if os.getenv('FLASK_BMS_ENV') != 'production':
             return response
         response.cache_control.max_age = 0
         return response
-
+        
 
 config = app.config
 manager = Manager(app)

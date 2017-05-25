@@ -37,8 +37,6 @@
                     {{book.upload_user.username}}
                     </a>                      
                 </div>
-
-
                 <div class="book-info">
                      <span class="item-name">图书编号</span>{{book.book_number}}
                 </div>
@@ -61,7 +59,6 @@
 
                         {% if current_user.can(Permission.ADMIN_CONTENT) %}
                         <a data-toggle="modal" data-target="#myReturnModal_{{user[0]}}">
-                            <img class="img-rounded" src="http://www.gravatar.com/avatar/{{user[2]}}?s=18&amp;d=identicon&amp;r=g"/>
                             &nbsp;
                         </a>
                         <div class="modal fade" id="myReturnModal_{{user[0]}}" tabindex="-1" role="dialog">
@@ -98,7 +95,7 @@
                     <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
                     {% endif %}
 
-                    {% if book.can_rent() and cu%}
+                    {% if book.can_rent() and current_user.is_authenticated %}
                     <a data-toggle="modal" data-target="#myOrderModal" class="btn btn-info">提交借阅申请</a>
                     {% else %}
                     <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>
