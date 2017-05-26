@@ -38,13 +38,9 @@
                     {% endif %}
                 </ul>
             </li>
-            {% if current_user.is_authenticated and current_user.is_super_admin %}
+            {% if current_user.is_authenticated and current_user.is_super_admin() %}
                 <li><a href="{{ url_for('admin.admin_dashboard')}}">管理界面</a></li>
             {% endif %}
-
-
-
-
             </ul>
              <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}

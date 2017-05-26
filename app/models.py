@@ -51,6 +51,11 @@ class Role(db.Model):
         db.session.commit()
 
 
+ebooks_download=db.Table('ebooks_download',
+    db.Column('user_id',db.Integer,db.ForeignKey('users.id')),
+    db.Column('ebooks_id',db.Integer,db.ForeignKey('ebooks.id')),
+    db.Column('download_time',db.DateTime(), default=datetime.utcnow)
+)
 
 class User(db.Model,UserMixin):
     __tablename__ = 'users'
@@ -67,6 +72,7 @@ class User(db.Model,UserMixin):
     about_me = db.Column(db.Text())
     created_at = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+
     avatar_hash = db.Column(db.String(32))
     # 在Ebook中增加一个upload_user对象
     ebooks = db.relationship('Ebook', backref='upload_user', lazy='dynamic')
@@ -75,7 +81,7 @@ class User(db.Model,UserMixin):
     books = db.relationship('Book', backref='upload_user', lazy='dynamic')
     # 在BookRent中加入rent_user
     rents_book = db.relationship('BookRent', backref='rent_user', lazy='dynamic')
-
+    ebooks_download_list = db.relationship('Ebook', secondary=ebooks_download,backref=db.backref('users_download',lazy='dynamic'))
 
     def __init__(self,**kw):
         super(User,self).__init__(**kw)
@@ -98,6 +104,9 @@ class User(db.Model,UserMixin):
     
     def ping(self):
         self.last_seen = datetime.utcnow()
+        db.session.add(self)
+    def downloads(self):
+        self.downloads = self.downloads + 1
         db.session.add(self)
 
     def generate_confirmation_token(self,expiration=3600):
@@ -170,7 +179,6 @@ class Ebook(db.Model):
     uploader_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer,db.ForeignKey('categories.id'))
     tags = db.relationship('Tag', secondary=ebooks_tags,backref=db.backref('ebooks',lazy='dynamic'))
-
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
@@ -201,6 +209,8 @@ class Tag(db.Model):
     description = db.Column(db.Text())
     @staticmethod   
     def findOrInsert(tagName):
+        if tagName == '':
+            return None
         tag = Tag.query.filter_by(name=tagName).first()
         if tag is not None:
             return tag
@@ -314,6 +324,8 @@ class BookRent(db.Model):
     rent_date = db.Column(db.DateTime(), default=datetime.utcnow)
     rent_time = db.Column(db.Integer,default=30)
 
+
+ 
 login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader

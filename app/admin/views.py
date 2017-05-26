@@ -22,20 +22,56 @@ def admin_dashboard():
     try:
         sql = text("select sum(total_count) as total from books")
         books_count = db.engine.execute(sql).fetchall()[0][0]
+        if books_count is None:
+            books_count =0
     except:
         books_count=0
+
+    # 下载最多的图书统计 
     best_download_books = Ebook.query.order_by(Ebook.downloads.desc()).limit(10).all()
     best_download_books_name = [b.name for b in best_download_books]
     best_download_books_downloads = [b.downloads for b in best_download_books]
 
+    # 下载最多的用户统计
+    try:
+        most_download_users_sql = text("select user_id,username,count(*) as downloads from ebooks_download inner join users on ebooks_download.user_id=users.id group by user_id order by downloads desc limit 10;")
+        most_download_users_list = db.engine.execute(most_download_users_sql).fetchall()
+        most_download_users_username = [m[1] for m in most_download_users_list]
+        most_download_users_downloads = [m[2] for m in most_download_users_list]
+    except Exception as e:
+        most_download_users_username=[]
+        most_download_users_downloads=[]
+    # 最近7天的下载数据统计
+
     ebooks_count = Ebook.query.count()
     bookrents_count = BookRent.query.filter_by(active=1).count()
-    count = [users_count,books_count,ebooks_count,bookrents_count]
+
+    try:
+        download_statics_sql = text("select count(*) as downloads from ebooks_download;")
+        download_count = db.engine.execute(download_statics_sql).fetchall()[0][0]
+    except Exception:
+        download_count = 0
+
+    count = [users_count,books_count,ebooks_count,bookrents_count,download_count]
     
+    try:
+        each_day_download_sql = text("select date(download_time) as each_day,count(*) from ebooks_download where download_time > current_date - interval 7 day group by each_day order by each_day asc limit 7;")
+        each_day_download = db.engine.execute(each_day_download_sql).fetchall()
+        each_day_download_date = [str(m[0]) for m in each_day_download]
+        each_day_download_count = [m[1] for m in each_day_download]
+    except Exception as e:
+        print e
+        each_day_download_date = []
+        each_day_download_count = []        
+
     return render_template('admin/index.html', 
                             app_name='Flask-BMS',
                             best_download_books_name=json.dumps(best_download_books_name),
                             best_download_books_downloads=json.dumps(best_download_books_downloads),
+                            most_download_users_username=json.dumps(most_download_users_username),
+                            most_download_users_downloads=json.dumps(most_download_users_downloads),
+                            each_day_download_date=json.dumps(each_day_download_date),
+                            each_day_download_count=json.dumps(each_day_download_count),
                             count=count)
 
 

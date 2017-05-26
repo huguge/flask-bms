@@ -231,6 +231,9 @@ span.tooltip:after {
     margin:0;
     margin-top:10px;
 }
+.chart-box{
+    padding: 2em 2em;
+}
 .commentList li > div {
     display:table-cell;
 }
@@ -273,6 +276,9 @@ ul.books{
     margin: 0 0 0 4px;
     padding: 0;
 }
+.book-thumbnail{
+    text-align: center;
+}
 .page-info{
     margin-bottom: 2em;
 }
@@ -281,10 +287,19 @@ ul.books{
     padding: 1em;
     box-shadow: 0.1em 0.4em 0.1em 0.1em rgb(199, 199, 199);
 }
+img.book-big-img{
+    width: 100%!important;
+}
 ul.books img.book-list-img{
     width: 160px;
     height: 160px;
 }
+
+ul.books img.ebook-list-img{
+    width: 130px;
+    height: 160px;
+}
+
 ul.books li{
     margin-bottom: 20px;
 }
@@ -292,7 +307,7 @@ ul.books li{
     line-height: 1.8em;
 }
 .book-img{
-    margin-top: 1em;
+    margin-top: 2em;
 }
 .book-info .book-name{
     font-size: 1.3em;
@@ -306,6 +321,89 @@ ul.books li{
     color:gray;
     font-size: 0.7em;
 }
+
+.rencent-user{
+    border-top: 1px solid rgba(195, 195, 195, 0.42);
+    border-bottom: 1px solid rgba(195, 195, 195, 0.42);
+    padding: 0.5px 0em 1em 0em;
+}
+.rencent-user span{
+    display: inline-block;
+    margin: .5em 0em;
+    font-weight: 100;
+    font-family: monospace;
+    font-style: italic;
+}
+
+
+/*Books 3d css*/
+
+/* Fallback styles */
+.book_3d {
+  display: inline-block;
+  box-shadow: 5px 5px 20px #333;
+  width: 80%;
+  margin: 2.3em 0em;
+}
+
+.book_3d img { vertical-align: middle; }
+
+/*
+ *  In order for this to work, you must use Modernizer
+ *  to detect 3D transform browser support. This will add
+ *  a "csstransforms3d" class to the HTML element.
+ *
+ *  Visit http://modernizr.com/ for installation instructions
+ */
+
+.books_3d {
+  -moz-perspective: 100px;
+  -moz-transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.book_3d {
+  position: relative;
+  -moz-perspective: 100px;
+  -moz-transform: rotateY(-3deg);
+  -webkit-transform: perspective(100) rotateY(-3deg);
+  outline: 1px solid transparent; /* Helps smooth jagged edges in Firefox */
+  box-shadow: none;
+  width: 80%;
+  margin: 2.3em 0em;
+}
+
+.book_3d img {
+  position: relative;
+  max-width: 100%;
+  border: 1px solid rgba(47, 47, 47, 0.19);
+}
+
+.book_3d:before,
+.book_3d:after {
+  position: absolute;
+  top: 2%;
+  height: 96%;
+  content: ' ';
+  z-index: -1;
+}
+
+.book_3d:before {
+    width: 100%;
+    left: 6.5%;
+    background-color: #633b29;
+    box-shadow: 5px 5px 20px #adadad;
+}
+
+.book_3d:after {
+  width: 5%;
+  left: 100%;
+  background-color: #EFEFEF;
+  box-shadow: inset 0px 0px 5px #aaa;
+  -moz-transform: rotateY(20deg);
+  -webkit-transform: perspective(100) rotateY(20deg);
+}
+
 
 /*Search Bar*/
 .search-box {

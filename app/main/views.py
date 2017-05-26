@@ -10,7 +10,7 @@ import random
 # from manage import config
 from app.main import main 
 from app import db
-from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent
+from app.models import User, Ebook, Comment, Permission, Book, Tag, BookRent
 from app.lib import super_admin_require
 from app.main.forms import EditProfileForm, UploadEbookForm, CommentForm, AddBookForm, EditBookForm, EditEBookForm
 from config import config
@@ -65,12 +65,14 @@ def books():
 def addbook():
     form = AddBookForm()
     book = Book(uploader_id=current_user.id)
+    ts = str(time.time()).split('.')[0]
     if form.validate_on_submit():
-        f = form.book_img.data
-        ts = str(time.time()).split('.')[0]
-        file_name = ts+'_'+f.filename
-        file_path = os.path.join(config['default'].UPLOAD_PATH+'/books/', file_name)
-        f.save(file_path)
+        if form.book_img.data: 
+            f = form.book_img.data
+            file_name = ts+'_'+f.filename
+            file_path = os.path.join(config['default'].UPLOAD_PATH+'/books/', file_name)
+            f.save(file_path)
+            book.image_path = url_for('static', filename='uploads/books/' + file_name)
         book.name = form.name.data
         book.author = form.author.data or u'无'
         book.description = form.description.data or u'暂无介绍'
@@ -81,16 +83,17 @@ def addbook():
                 book.tags.append(tag)
         book.status_id = form.status.data
         book.upload_user = current_user._get_current_object()
-        book.isbn = form.isbn.data or u'无'
+        book.isbn = form.isbn.data or u'暂无'
         book.total_count = int(form.total_count.data or 0)
-        book.book_number = form.book_number.data or u'无'
-        book.publisher = form.publisher.data or u'无'
-        _, file_type = os.path.splitext(file_name)
-        book.image_path = url_for('static', filename='uploads/books/' + file_name)
+        book.book_number = form.book_number.data or u'暂无'
+        book.publisher = form.publisher.data or u'暂无'
+
         try:
-            id,img_200_200_path,img_350_350_path=download_images_from_bookname(form.name.data,config['default'].UPLOAD_PATH+'/books/')
-            book.description =  get_detail_info(id)[0]
-            book.image_path = img_200_200_path or img_350_350_path
+            if form.book_img.data is None:
+                id,img_200_200_path,img_350_350_path=download_images_from_bookname(form.name.data,config['default'].UPLOAD_PATH+'/books/')
+                print id
+                book.description = get_detail_info(id)[0]
+                book.image_path = img_350_350_path.split('/app')[-1]
         except Exception as e:
             raise e
         db.session.add(book)
@@ -104,7 +107,11 @@ def book(id):
     s = text("select users.id,users.username,users.avatar_hash from book_rent inner join users where book_rent.rent_person_id=users.id and book_rent.active=1 and book_rent.rent_book_id=:x")
     book_rent_users = db.engine.execute(s, x=id).fetchall()
     form = CommentForm()
-    userlist = BookRent.query.filter_by(rent_book_id=4,active=1).first().rent_user
+    rent_book_obj = BookRent.query.filter_by(rent_book_id=4,active=1).first()
+    if rent_book_obj is not None and rent_book_obj.has_key('rent_user'):
+        userlist = rent_book_obj['rent_user']
+    else:
+        userlist = []
     if form.validate_on_submit():
         comment = Comment(body=form.body.data, book=book, author=current_user._get_current_object())
         db.session.add(comment)
@@ -153,7 +160,10 @@ def editbook(id):
         if tag_string is not None and len(tag_string.split(';'))>0:
             for t in tag_string.split(';'):
                 tag = Tag.findOrInsert(t)
-                book.tags.append(tag)
+                if tag is None:
+                    continue
+                else:
+                    book.tags.append(tag)
         book.category_id = form.category.data
         book.status_id = form.status.data
         book.isbn = form.isbn.data or u'无'
@@ -286,6 +296,7 @@ def upload_ebooks():
 @main.route('/ebook/<int:id>', methods=['GET', 'POST'])
 def ebook(id):
     ebook = Ebook.query.get_or_404(id)
+    download_users = ebook.users_download.limit(10).all()
     form = CommentForm()
     if form.validate_on_submit():
         comment = Comment(body=form.body.data, ebook=ebook, author=current_user._get_current_object())
@@ -309,6 +320,7 @@ def ebook(id):
                            url_point = 'main.ebook',
                            can_write_comment=can_write_comment,
                            book=ebook,
+                           download_users = download_users,
                            Permission=Permission,
                            tags=tags,
                            form=form,
@@ -324,6 +336,8 @@ def download(file_type, id):
             path = os.path.dirname(file_path)+'/'+ebook.name
             ebook.downloads = ebook.downloads+1
             db.session.add(ebook)
+            if current_user.is_authenticated:
+                current_user.ebooks_download_list.append(ebook)
             return send_file(filename_or_fp=path,as_attachment=True)
         except Exception as e:
             raise e
@@ -387,6 +401,9 @@ def return_book(id,user_id):
         try:
             bookrent = BookRent.query.filter_by(rent_person_id=user_id,rent_book_id=id,active=1).first()
             bookrent.active =0
+            rent_num = bookrent.book.rent_count
+            if rent_num>1:
+                bookrent.book.rent_count = rent_num-1
             db.session.add(bookrent)
             db.session.commit()
             flash('图书归还申请已成功提交')

@@ -103,18 +103,18 @@ def get_detail_info(id):
         startidx = data.find('(')
         endidx = data.rfind(')')
         info = json.loads(data[startidx + 1:endidx])
-        # print info
         content = BeautifulSoup(info['content'],"html.parser")
-        description = content.find("div", class_="book-detail-content").get_text().encode('utf-8')
+        description = content.find("div", {"id":u"detail-tag-id-3"}).find("div",class_='book-detail-content').get_text()  
         return (description,)
     except:
         return ("",)
 
 
 def main():
-    filename = u'微服务设计'
+    filename = u'https权威指南'
     path='./'
     id,_,_=download_images_from_bookname(filename,path)
     description = get_detail_info(id)[0]
+    print description
 if __name__ == '__main__':
     main()    

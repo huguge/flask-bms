@@ -5,13 +5,15 @@
 <div class ="container">
     <div class ="row">
         <div class = "page-content col-md-12">
-            <div class="col-md-4 page-info">
-                <div class="book-img">
-                    <img class = "book-big-img" src = "{{book.image_path}}"/>
+            <div class="col-md-4 page-info books_3d">
+                <div class="book_3d">
+                    <img src = "{{book.image_path}}"/>
                 </div>
             </div>
             <div class="col-md-8 page-info">
-                <h2>{{ book.name }}</h2>
+                <div class="col-md-12"><h2>{{ book.name }}</h2></div>
+                <div class="col-md-8">
+               
                 <ul class="tags">
                     {% for i in tags %}
                     <li><a href="{{url_for("main.ebook_tag",name=i.name)}}" class="tag">{{i.name}}</a></li>
@@ -50,6 +52,17 @@
                     <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
                      {% endif %}
                     <a class="btn btn-info" href={{ url_for('main.download',file_type='ebook',id=book.id)}}>下载</a>
+                </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="rencent-user">
+                    <div><span>最近下载用户列表</span></div>
+                    {% for u in download_users %}
+                         <span><a data-toggle="tooltip"  title="{{u.username}}" href="{{url_for("main.user",username=u.username)}}">
+                                <img class="img-rounded" src="http://www.gravatar.com/avatar/{{u.avatar_hash}}?s=20&amp;d=identicon&amp;r=g"/>
+                        </a></span>
+                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

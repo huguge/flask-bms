@@ -1,4 +1,15 @@
 {% extends "admin/base.html"%}
+{% block head %}
+{{super()}}
+<meta id="data-store" 
+      data-best-downloads-books-name="{{best_download_books_name}}"
+      data-best-download-books-downloads="{{best_download_books_downloads}}"
+      data-most-download-users-username="{{most_download_users_username}}"
+      data-most-download-users-downloads="{{most_download_users_downloads}}"
+      data-each-day-download-count="{{each_day_download_count}}"
+      data-each-day-download-date="{{each_day_download_date}}"
+>
+{% endblock %}
 {% block sub_page_content %}
 
 <!-- Page Content -->
@@ -6,31 +17,37 @@
 <div id="page-content-wrapper">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <!--<h1>dashboard展示页面</h1>-->
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="info-box">
                         <i class="fa fa-users" aria-hidden="true"></i>&nbsp;<span>用户总数</span>
                         <h2>{{count[0]}}</h2>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="info-box">
                         <i class="fa fa-book" aria-hidden="true"></i>&nbsp;<span>图书</span>
                         <h2>{{count[1]}}</h2>
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="info-box">
-                        <i class="fa fa-share" aria-hidden="true"></i>&nbsp;<span>已借阅书籍</span>
+                        <i class="fa fa-share" aria-hidden="true"></i>&nbsp;<span>借阅数</span>
                         <h2>{{count[3]}}</h2>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="info-box">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;<span>电子书</span>
                         <h2>{{count[2]}}</h2>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="info-box">
+                        <i class="fa fa-cloud-download" aria-hidden="true"></i>&nbsp;<span>下载数</span>
+                        <h2>{{count[4]}}</h2>
                     </div>
                 </div>
             </div>
@@ -40,11 +57,13 @@
             <div class="col-md-10">
                 <div class="row">
                     <div class="col-md-4 chart-box">
-                        <h4>下载最多的图书统计</h4>
                         <canvas id="best-download-books-chart" width="400" height="300"></canvas>
                     </div>
-                    <div class="col-md-4">
-                        <canvas id="best-download-users-chart" width="400" height="300"></canvas>
+                    <div class="col-md-4 chart-box">
+                        <canvas id="most-download-users-chart" width="400" height="300"></canvas>
+                    </div>
+                    <div class="col-md-4 chart-box">
+                        <canvas id="downloads-in-7days-chart" width="400" height="300"></canvas>
                     </div>
                 </div>
             </div>
@@ -61,16 +80,17 @@ var ctx = document.getElementById("best-download-books-chart").getContext("2d");
 var data = {
     type: 'bar',
     data: {
-        labels: {{ best_download_books_name | safe}},
+        labels: $("#data-store").data().bestDownloadsBooksName,
         datasets: [{
             label: '下载最多的图书排行',
-            data: {{ best_download_books_downloads | safe}},
-            borderWidth: 1
+            data: $("#data-store").data().bestDownloadBooksDownloads,
+            borderWidth: 1,
+            backgroundColor:"rgba(215, 236, 251, 0.45)"
         }]
     },
     options: {
         legend: {
-            display: false,
+            display: true,
         },
         scales: {
             yAxes: [{
@@ -87,20 +107,52 @@ var data = {
 }
 var best_download_chart = new Chart(ctx,data);
 
-var ctx = document.getElementById("best-download-users-chart").getContext("2d");
+var ctx = document.getElementById("most-download-users-chart").getContext("2d");
 var data = {
     type: 'bar',
     data: {
-        labels: {{ best_download_user_name | safe}},
+        labels: $("#data-store").data().mostDownloadUsersUsername,
         datasets: [{
             label: '下载最多的用户排行',
-            data: {{ best_download_users_downloads | safe}},
-            borderWidth: 1
+            data: $("#data-store").data().mostDownloadUsersDownloads,
+            borderWidth: 1,
+            backgroundColor:'rgba(255, 99, 132, 0.2)'
         }]
     },
     options: {
         legend: {
-            display: false,
+            display: true,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    stepSize:1
+                }
+            }],
+             xAxes: [{
+                display: false
+            }]
+        }
+    }
+}
+var best_download_chart = new Chart(ctx,data);
+
+var ctx = document.getElementById("downloads-in-7days-chart").getContext("2d");
+var data = {
+    type: 'bar',
+    data: {
+        labels: $("#data-store").data().eachDayDownloadDate,
+        datasets: [{
+            label: '最近七天下载数量统计',
+            data: $("#data-store").data().eachDayDownloadCount,
+            borderWidth: 1,
+            backgroundColor:'rgba(255, 159, 64, 0.2)'
+        }]
+    },
+    options: {
+        legend: {
+            display: true,
         },
         scales: {
             yAxes: [{

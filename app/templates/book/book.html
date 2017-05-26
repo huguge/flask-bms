@@ -50,7 +50,7 @@
                      <span class="item-name">出版社</span>{{book.publisher}}
                 </div>    
                 <div class="book-info">
-                     <span class="item-name">库存总量</span>{{book.total_count}}本
+                     <span class="item-name">库存总量</span>{{book.total_count - book.rent_count}}本
                 </div>    
                 <div class="book-info">
                      <span class="item-name">当前借阅人</span>
@@ -59,6 +59,7 @@
 
                         {% if current_user.can(Permission.ADMIN_CONTENT) %}
                         <a data-toggle="modal" data-target="#myReturnModal_{{user[0]}}">
+                            {{user.username}}
                             &nbsp;
                         </a>
                         <div class="modal fade" id="myReturnModal_{{user[0]}}" tabindex="-1" role="dialog">

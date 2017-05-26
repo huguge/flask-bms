@@ -10,6 +10,7 @@ export FLASK_BMS_EMAIL_SERVER=邮件服务器地址
 export FLASK_BMS_EMAIL_USERNAME=邮件服务器的用户名
 export FLASK_BMS_EMAIL_PASSWORD=邮件服务器的登入密码
 export FLASK_BMS_DATABASE_URI='mysql://root:123456@localhost/'(实例)
+
 ```
 
 第一次部署需要安装数据库
@@ -19,14 +20,9 @@ export FLASK_BMS_DATABASE_URI='mysql://root:123456@localhost/'(实例)
 2. pip install -r requirements.txt
 3. mysql -u*** -p < install/install.sql
 
-python manage.py shell
-
->>>Role.insert_roles()
->>>Category.insert_category()
+python manage.py deploy
 
 ```
-
-
 生产环境下启动服务器
 ```
 gunicorn --bind 0.0.0.0:8000 wsgi

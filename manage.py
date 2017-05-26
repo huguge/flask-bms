@@ -54,7 +54,7 @@ def deploy():
     from flask_migrate import upgrade
     from app.models import Role,Category,BookStatus,User
     upgrade()
-    for i in [Role,Category,BookStatus,User]:
+    for i in [Role,Category,BookStatus]:
         i.insert_default()
     print 'insert default data into database success'    
 
