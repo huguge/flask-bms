@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*- 
 import json
+import os
 
 from flask import render_template, session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
 from sqlalchemy.sql import text
@@ -8,10 +9,10 @@ from flask_login import login_required,current_user
 
 from app.admin import admin 
 from app import db
-from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent,Role
+from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent,Role,ConfigTable
 from app.lib import super_admin_require
 from config import config
-
+from app.admin.forms import ConfigForm
 
 @admin.route('/')
 @login_required
@@ -110,11 +111,35 @@ def change_user_auth(id,role_id):
     db.session.commit()
     return redirect(request.referrer or url_for("admin.admin_user"))
 
-@admin.route('/config')
+@admin.route('/config', methods=['POST','GET'])
 @login_required
 @super_admin_require
 def admin_config():
-    return render_template('admin/config.html', app_name='Flask-BMS')
+    form = ConfigForm()
+    # 从配置config全局对象读取数据内容到表中
+    config_name_list = [i for i in dir(form) if i.isupper()]
+    env = os.getenv('FLASK_BMS_ENV') or 'default'
+    if form.validate_on_submit():
+        for c in config_name_list:
+            data = ConfigTable.query.filter_by(name=c).first()
+            if data is None:
+                data = ConfigTable(name=c,config_value=str(form[c].data),type_name=type(form[c].data).__name__)
+            else:
+                data.name=c
+                data.config_value = str(form[c].data)
+                data.type_name = type(form[c].data).__name__
+            db.session.add(data)
+            setattr(config[env],c,form[c].data)
+        # 保存数据库
+        db.session.commit()
+        return redirect(url_for('admin.admin_config'))
+    else:
+        # 从配置config全局对象读取数据内容到表中
+        config_name_list = [i for i in dir(form) if i.isupper()]
+        env = os.getenv('FLASK_BMS_ENV') or 'default'
+        for c in config_name_list:
+            form[c].data = getattr(config[env],c)
+        return render_template('admin/config.html',form=form,app_name='Flask-BMS')
 
 @admin.route('/about')
 @login_required

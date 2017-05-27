@@ -5,7 +5,7 @@ import sys
 from flask import request
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
-from app import create_app,db
+from app import create_app,db,reload_config
 from app.models import User,Role,BookStatus,Category,Book,Ebook,BookRent
 import flask_whooshalchemyplus as whooshalchemy
 
@@ -25,6 +25,12 @@ if os.getenv('FLASK_BMS_ENV') != 'production':
         response.cache_control.max_age = 0
         return response
         
+# @app.before_first_request
+# def refresh_config():
+#     print 'config refreshing....'
+#     reload_config(os.getenv('FLASK_BMS_ENV') or 'default')
+#     print 'config refresh done'
+
 
 config = app.config
 manager = Manager(app)
@@ -59,6 +65,6 @@ def deploy():
     print 'insert default data into database success'    
 
 
-
 if __name__ == '__main__':
     manager.run()
+    

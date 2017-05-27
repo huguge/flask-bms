@@ -8,7 +8,6 @@ from flask_bootstrap import Bootstrap
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
 # 定义用户的登入认证
 
 login_manager = LoginManager()
@@ -23,10 +22,20 @@ mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 
+def reload_config(config_name):
+        # 从数据库载入配置
+    from app.models import ConfigTable
+    config_name_list = [i for i in dir(config[config_name]) if i.isupper()]
+    for c in config_name_list:
+        conf_data = ConfigTable.query.filter_by(name=c).first()
+        if conf_data is not None:
+            config[config_name][c]=getattr(__builtins__, conf_data.type_name)(conf_data.config_value)
+    print app.config
+    app.config.from_object(config[config_name])
+
 
 def create_app(config_name):
     app = Flask(__name__,static_folder='static')
-    
     app.config.from_object(config[config_name])
     bootstrap.init_app(app)
     mail.init_app(app)

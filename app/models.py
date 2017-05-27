@@ -324,6 +324,12 @@ class BookRent(db.Model):
     rent_date = db.Column(db.DateTime(), default=datetime.utcnow)
     rent_time = db.Column(db.Integer,default=30)
 
+class ConfigTable(db.Model):
+    __tablename__ = 'config_table'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    type_name = db.Column(db.String(100))
+    config_value = db.Column(db.String(200))
 
  
 login_manager.anonymous_user = AnonymousUser

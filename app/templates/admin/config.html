@@ -7,10 +7,83 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <h1>Simple Sidebar</h1>
-                <p>This template has a responsive menu toggling system. The menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will appear/disappear. On small screens, the page content will be pushed off canvas.</p>
-                <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p>
-                <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                <h1>配置选项</h1>
+                <hr>
+                <form action method="post" class="form" role="form" enctype="multipart/form-data">
+
+                <div class="form-group required"><label class="control-label" for="FLASK_BMS_ADMIN">默认管理员账号</label>
+                    <input class="form-control" id="FLASK_BMS_ADMIN" name="FLASK_BMS_ADMIN" required="" value="{{form.FLASK_BMS_ADMIN.data}}" type="text">
+                    {% for error in form.errors.FLASK_BMS_ADMIN %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+
+
+                <div class="form-group required"><label class="control-label" for="MAIL_SERVER">默认邮件服务器地址</label>
+                    <input class="form-control" id="MAIL_SERVER" name="MAIL_SERVER" required="" value="{{form.MAIL_SERVER.data}}" type="text">
+                    {% for error in form.errors.MAIL_SERVER %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group required"><label class="control-label" for="MAIL_USERNAME">默认邮件发件人账号</label>
+                    <input class="form-control" id="MAIL_USERNAME" name="MAIL_USERNAME" required="" value="{{form.MAIL_USERNAME.data}}" type="text">
+                    {% for error in form.errors.MAIL_USERNAME %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+
+
+               <div class="form-group required"><label class="control-label" for="MAIL_PASSWORD">默认邮箱密码</label>
+                    <input class="form-control" id="MAIL_PASSWORD" name="MAIL_PASSWORD" required="" value="{{form.MAIL_PASSWORD.data}}" type="password">
+                    {% for error in form.errors.MAIL_PASSWORD %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group required"><label class="control-label" for="SQLALCHEMY_DATABASE_URI">数据库连接配置</label>
+                    <input class="form-control" id="SQLALCHEMY_DATABASE_URI" name="SQLALCHEMY_DATABASE_URI" required="" value="{{form.SQLALCHEMY_DATABASE_URI.data}}" type="text">
+                    {% for error in form.errors.SQLALCHEMY_DATABASE_URI %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group required"><label class="control-label" for="SQLALCHEMY_TRACK_MODIFICATIONS">数据库跟踪配置</label>
+                    <input class="form-control" id="SQLALCHEMY_TRACK_MODIFICATIONS" name="SQLALCHEMY_TRACK_MODIFICATIONS" required="" value="{{form.SQLALCHEMY_TRACK_MODIFICATIONS.data}}" type="text">
+                    {% for error in form.errors.SQLALCHEMY_TRACK_MODIFICATIONS %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group "><label class="control-label" for="author">DEBUG模式</label>
+                    <input class="form-control" id="DEBUG" name="DEBUG" value="{{form.DEBUG.data}}" type="text">
+                    {% for error in form.errors.DEBUG %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group "><label class="control-label" for="FLASK_BMS_MAX_PER_PAGE">列表显示最大数量</label>
+                    <input class="form-control" id="FLASK_BMS_MAX_PER_PAGE" name="FLASK_BMS_MAX_PER_PAGE" value="{{form.FLASK_BMS_MAX_PER_PAGE.data}}" type="text">
+                    {% for error in form.errors.FLASK_BMS_MAX_PER_PAGE %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group "><label class="control-label" for="UPLOAD_PATH">上传路径</label>
+                    <input class="form-control" id="UPLOAD_PATH" name="UPLOAD_PATH" value="{{form.UPLOAD_PATH.data}}" type="text">
+                    {% for error in form.errors.UPLOAD_PATH %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+                <div class="form-group "><label class="control-label" for="WHOOSH_BASE">全文检索路径</label>
+                    <input class="form-control" id="WHOOSH_BASE" name="WHOOSH_BASE" value="{{form.WHOOSH_BASE.data}}" type="text">
+                    {% for error in form.errors.WHOOSH_BASE %}
+                        <span class="help-inline">{{ error }}</span><br>
+                    {% endfor %}
+                </div>           
+                {{form.hidden_tag()}}
+                <input class="btn btn-default" id="submit" name="submit" value="保存" type="submit">
+            </form>               
+
+
+
             </div>
         </div>
     </div>

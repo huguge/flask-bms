@@ -95,12 +95,15 @@
                     <a href="{{url_for('main.editbook',id=book.id)}}" class="btn btn-info">编辑图书信息</a>
                     <a data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger">删除图书</a>
                     {% endif %}
-
-                    {% if book.can_rent() and current_user.is_authenticated %}
-                    <a data-toggle="modal" data-target="#myOrderModal" class="btn btn-info">提交借阅申请</a>
-                    {% else %}
-                    <button type="button" class="btn btn-danger"  disabled="disabled">暂时无法申请</button>
-                    {% endif %}
+                   {% if current_user.is_authenticated %}
+                        {% if book.can_rent() %}
+                        <a data-toggle="modal" data-target="#myOrderModal" class="btn btn-info">提交借阅申请</a>
+                        {% else %}
+                        <button type="button" class="btn btn-danger"  disabled="disabled">库存短缺</button>
+                        {% endif %}
+                   {% else %}
+                        <a type="button" class="btn btn-info" href="{{url_for("auth.login")}}">登录系统后提交</a>
+                   {% endif %}
                 </div>
             </div>
         </div>
