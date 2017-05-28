@@ -5,7 +5,7 @@ import os
 from flask import render_template, session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
 from sqlalchemy.sql import text
 from flask_login import login_required,current_user
-
+from dotenv import set_key 
 
 from app.admin import admin 
 from app import db
@@ -118,7 +118,8 @@ def admin_config():
     form = ConfigForm()
     # 从配置config全局对象读取数据内容到表中
     config_name_list = [i for i in dir(form) if i.isupper()]
-    env = os.getenv('FLASK_BMS_ENV') or 'default'
+    env = os.environ.get('FLASK_BMS_ENV') or 'default'
+    env_path = getattr(config[env],'ENV_PATH')
     if form.validate_on_submit():
         for c in config_name_list:
             data = ConfigTable.query.filter_by(name=c).first()
@@ -129,6 +130,7 @@ def admin_config():
                 data.config_value = str(form[c].data)
                 data.type_name = type(form[c].data).__name__
             db.session.add(data)
+            set_key(env_path,c,form[c].data)
             setattr(config[env],c,form[c].data)
         # 保存数据库
         db.session.commit()

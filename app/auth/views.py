@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*- 
-
-
 from flask import render_template,session,redirect,url_for,flash,request
 from flask_login import login_user,login_required,logout_user,current_user
 from app.auth import auth
@@ -16,15 +14,23 @@ def register():
             username=form.username.data,
             password=form.password.data)
         db.session.add(user)
-        db.session.commit()
-        token = user.generate_confirmation_token()
-        email.send_email(user.email,
-            u'确认邮箱账号',
-            'auth/email/confirm',
-            user=user,
-            token=token)
-        flash('激活邮件已经发送给您，请前往邮箱完成激活')
+        if user.role is None:
+            flash('数据库初始化未完成，请参考配置说明完成所有步骤')
+            db.session.delete(user)
+            return render_template('auth/register.html',form=form)
+        # 如果用户注册完毕自动确认，则该用户为管理员帐号
+        if user.confirmed == False:
+            token = user.generate_confirmation_token()
+            email.send_email(user.email,
+                u'确认邮箱账号',
+                'auth/email/confirm',
+                user=user,
+                token=token)
+            flash('激活邮件已经发送给您，请前往邮箱完成激活')
+        else:
+            flash('管理员帐号请直接登入系统')
         return redirect(url_for('auth.login'))
+
     return render_template('auth/register.html',form=form)
 
 @auth.route('/login', methods=['GET', 'POST'])
