@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-  
-
+from pydoc import locate
 # 第三方模块
-from flask import Flask, render_template
+from flask import Flask, render_template,current_app
 from flask_moment import Moment
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
@@ -24,14 +24,21 @@ db = SQLAlchemy()
 
 def reload_config(config_name):
         # 从数据库载入配置
-    from app.models import ConfigTable
+    from app.models import ConfigTable,Category
     config_name_list = [i for i in dir(config[config_name]) if i.isupper()]
+    category_list = Category.query.all()
+    category_list_array = []
+    for cat in category_list:
+        category_list_array.append(cat.name)
+    setattr(config[config_name],"MENU_CATEGORY",category_list_array)
     for c in config_name_list:
         conf_data = ConfigTable.query.filter_by(name=c).first()
         if conf_data is not None:
-            config[config_name][c]=getattr(__builtins__, conf_data.type_name)(conf_data.config_value)
-    print app.config
-    app.config.from_object(config[config_name])
+            if conf_data.config_value == "False":
+                setattr(config[config_name],c,False)
+            # config[config_name][c]=locate(conf_data.type_name)(conf_data.config_value)
+            setattr(config[config_name],c,locate(conf_data.type_name)(conf_data.config_value))
+    current_app.config.from_object(config[config_name])
 
 
 def create_app(config_name):

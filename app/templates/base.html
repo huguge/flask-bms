@@ -26,7 +26,14 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">图书管理 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="{{ url_for('main.books')}}">书籍列表</a></li>
+                    <li role="separator" class="divider"></li>
+                    {% if MENU_CATEGORY %}
+                        {% for cat in MENU_CATEGORY %}
+                        <li><a href="{{ url_for('main.book_category',name=cat)}}">{{cat}}</a></li>
+                        {% endfor %}
+                    {% endif %}
                     {% if current_user.is_authenticated and current_user.is_content_admin() %}
+                    <li role="separator" class="divider"></li>
                     <li><a href="{{ url_for('main.addbook')}}">新增书籍</a></li>
                     {% endif %}
                 </ul>
@@ -35,7 +42,14 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">电子书管理 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="{{ url_for('main.ebooks')}}">电子书列表</a></li>
+                    <li role="separator" class="divider"></li>
+                    {% if MENU_CATEGORY %}
+                        {% for cat in MENU_CATEGORY %}
+                        <li><a href="{{ url_for('main.ebook_category',name=cat)}}">{{cat}}</a></li>
+                        {% endfor %}
+                    {% endif %}                    
                     {% if current_user.is_authenticated %}
+                        <li role="separator" class="divider"></li>
                         <li><a href="{{ url_for('main.upload_ebooks') }}">上传电子书</a></li>
                     {% endif %}
                 </ul>

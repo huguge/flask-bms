@@ -1,0 +1,107 @@
+{% extends "admin/base.html"%}
+{% block sub_page_content %}
+
+<!-- Page Content -->
+
+<div id="page-content-wrapper">
+    <div class="container-fluid">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{message}}
+        </div>
+        {% endfor %}
+            <div class ="row">
+                <div class="page-header col-md-10">
+                    <h1>类别列表</h1>
+                </div>
+                <div class = "page-content col-md-10 user-list">
+
+                <!-- Trigger the modal with a button -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myAddModal">新增类别</button>
+
+                <!-- Modal -->
+                <div id="myAddModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">新增类别</h4>
+                    </div>
+                    <form class="form" method="POST">
+                        <div class="modal-body">
+                            <div class="form-group  required">
+                                <input class="form-control" id="new_category_name" name="new_category_name" required=""type="text">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">提交</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        </div>
+                    </form>
+                    </div>
+
+                </div>
+                </div>
+
+
+
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                            <th>类别ID</th>
+                            <th>类别名称</th>
+                            <th>类别操作</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                                <tr>
+                                   {% for cat in category %}
+                                   <tr>
+                                        <td scope="row">{{cat.id}}</td>
+                                        <td> {{cat.name}}
+                                        </td>
+                                        <td><a data-toggle="modal" data-target="#myDeleteModal-{{loop.index}}">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                        </td>
+                                        <div class="modal fade" id="myDeleteModal-{{loop.index}}" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title">删除类别对话框</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>确定删除类别{{cat.name}}?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                                    <a href="{{url_for('admin.delete_category',id=cat.id)}}" class="btn btn-danger">点击删除</a>
+                                                </div>
+                                                </div><!-- /.modal-content -->
+                                            </div><!-- /.modal-dialog -->
+                                            </div><!-- /.modal -->         
+                                    </tr>
+                                    {% endfor %}
+                            </tbody>
+                    </table>
+                    {% if pagination.pages > 1 %}
+                    <div class="pagination">
+                        {{ macros.pagination_widget(pagination,'main.ebooks')}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- /#page-content-wrapper -->
+
+{% endblock %}

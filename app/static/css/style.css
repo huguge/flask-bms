@@ -9,7 +9,7 @@ a{
 .navbar{
     border-radius:0px;
 }
-.page-header h2 {
+.page-header h1{
     margin-top: 10px!important;
     margin-bottom: 10px;
     display: inline-block;

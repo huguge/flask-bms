@@ -25,11 +25,11 @@ if os.getenv('FLASK_BMS_ENV') != 'production':
         response.cache_control.max_age = 0
         return response
         
-# @app.before_first_request
-# def refresh_config():
-#     print 'config refreshing....'
-#     reload_config(os.getenv('FLASK_BMS_ENV') or 'default')
-#     print 'config refresh done'
+@app.before_first_request
+def refresh_config():
+    print 'config refreshing....'
+    reload_config(os.getenv('FLASK_BMS_ENV') or 'default')
+    print 'config refresh done'
 
 
 config = app.config

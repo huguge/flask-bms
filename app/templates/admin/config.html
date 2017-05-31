@@ -32,8 +32,6 @@
                         <span class="help-inline">{{ error }}</span><br>
                     {% endfor %}
                 </div>
-
-
                <div class="form-group required"><label class="control-label" for="MAIL_PASSWORD">默认邮箱密码</label>
                     <input class="form-control" id="MAIL_PASSWORD" name="MAIL_PASSWORD" required="" value="{{form.MAIL_PASSWORD.data}}" type="password">
                     {% for error in form.errors.MAIL_PASSWORD %}
@@ -43,20 +41,6 @@
                 <div class="form-group required"><label class="control-label" for="SQLALCHEMY_DATABASE_URI">数据库连接配置</label>
                     <input class="form-control" id="SQLALCHEMY_DATABASE_URI" name="SQLALCHEMY_DATABASE_URI" required="" value="{{form.SQLALCHEMY_DATABASE_URI.data}}" type="text">
                     {% for error in form.errors.SQLALCHEMY_DATABASE_URI %}
-                        <span class="help-inline">{{ error }}</span><br>
-                    {% endfor %}
-                </div>
-
-                <div class="form-group required"><label class="control-label" for="SQLALCHEMY_TRACK_MODIFICATIONS">数据库跟踪配置</label>
-                    <input class="form-control" id="SQLALCHEMY_TRACK_MODIFICATIONS" name="SQLALCHEMY_TRACK_MODIFICATIONS" required="" value="{{form.SQLALCHEMY_TRACK_MODIFICATIONS.data}}" type="text">
-                    {% for error in form.errors.SQLALCHEMY_TRACK_MODIFICATIONS %}
-                        <span class="help-inline">{{ error }}</span><br>
-                    {% endfor %}
-                </div>
-
-                <div class="form-group "><label class="control-label" for="author">DEBUG模式</label>
-                    <input class="form-control" id="DEBUG" name="DEBUG" value="{{form.DEBUG.data}}" type="text">
-                    {% for error in form.errors.DEBUG %}
                         <span class="help-inline">{{ error }}</span><br>
                     {% endfor %}
                 </div>
@@ -77,8 +61,31 @@
                     {% for error in form.errors.WHOOSH_BASE %}
                         <span class="help-inline">{{ error }}</span><br>
                     {% endfor %}
-                </div>           
+                </div>
+
                 {{form.hidden_tag()}}
+
+                <div class="checkbox">
+                    <label>
+                        {% if form.SQLALCHEMY_TRACK_MODIFICATIONS.data == True %}
+                            <input checked="checked" id="SQLALCHEMY_TRACK_MODIFICATIONS" name="SQLALCHEMY_TRACK_MODIFICATIONS" type="checkbox"> 数据库跟踪配置
+                        {% else %}
+                             <input id="SQLALCHEMY_TRACK_MODIFICATIONS" name="SQLALCHEMY_TRACK_MODIFICATIONS" type="checkbox"> 数据库跟踪配置
+                        {% endif %}
+                        
+                    </label>
+                </div>              
+
+                <div class="checkbox">
+                    <label>
+                        {% if form.DEBUG.data == True %}
+                            <input checked="checked" id="DEBUG" name="DEBUG" type="checkbox"> 开启DEBUG
+                        {% else %}
+                             <input id="DEBUG" name="DEBUG" type="checkbox"> 开启DEBUG
+                        {% endif %}
+                        
+                    </label>
+                </div>   
                 <input class="btn btn-default" id="submit" name="submit" value="保存" type="submit">
             </form>               
 

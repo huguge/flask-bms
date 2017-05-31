@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*- 
-from flask import render_template, session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
+from flask import session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
 from sqlalchemy.sql import text
 from flask_login import login_required,current_user
 from werkzeug.utils import secure_filename
@@ -15,13 +15,12 @@ from app.lib import super_admin_require
 from app.main.forms import EditProfileForm, UploadEbookForm, CommentForm, AddBookForm, EditBookForm, EditEBookForm
 from config import config
 from app.works import getImageFromPdf
-from app.lib import color_picker
+from app.lib import custom_render_template
 from app.works.jd_imge_scrapy import download_images_from_bookname,get_detail_info
-
 
 @main.route('/')
 def index():
-    return render_template('index.html',
+    return custom_render_template('index.html',
         app_name = 'Flask-BMS',
         username = session.get('username'))
 
@@ -33,7 +32,7 @@ def user(username):
     book_rent_list = db.engine.execute(sql, x=u.id).fetchall()
     if u is None:
         abort(404)
-    return render_template('user/profile.html', user=u,book_rent_list=book_rent_list)
+    return custom_render_template('user/profile.html', user=u,book_rent_list=book_rent_list)
 
 @main.route('/edit_profile', methods=['POST','GET'])
 @login_required
@@ -47,7 +46,7 @@ def edit_profile():
         return redirect(url_for('main.edit_profile', username = current_user.username))
     form.name.data = current_user.name
     form.about_me.data = current_user.about_me
-    return render_template('user/edit_profile.html', form=form)
+    return custom_render_template('user/edit_profile.html', form=form)
 
 @main.route('/books')
 def books():
@@ -58,7 +57,7 @@ def books():
     else:
         pagination = Book.query.whoosh_search(search).order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
     books_list = pagination.items    
-    return render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS')
+    return custom_render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS')
         
 @main.route('/addbook',methods=['GET','POST'])
 @login_required
@@ -80,6 +79,8 @@ def addbook():
         if form.tag.data and len(form.tag.data.split(';'))>0:
             for i in form.tag.data.split(';'):
                 tag = Tag.findOrInsert(i)
+                if tag == None:
+                    continue
                 book.tags.append(tag)
         book.status_id = form.status.data
         book.upload_user = current_user._get_current_object()
@@ -91,7 +92,6 @@ def addbook():
         try:
             if form.book_img.data is None:
                 id,img_200_200_path,img_350_350_path=download_images_from_bookname(form.name.data,config['default'].UPLOAD_PATH+'/books/')
-                print id
                 book.description = get_detail_info(id)[0]
                 book.image_path = img_350_350_path.split('/app')[-1]
         except Exception as e:
@@ -99,7 +99,7 @@ def addbook():
         db.session.add(book)
         flash('新增图书成功')
         return redirect(url_for('main.addbook'))
-    return render_template('book/add_book.html', form=form)
+    return custom_render_template('book/add_book.html', form=form)
 
 @main.route('/book/<int:id>', methods=['GET', 'POST'])
 def book(id):
@@ -128,7 +128,7 @@ def book(id):
     tags = []
     for i in book.tags:
         tags.append({'name':i.name,'className':color_picker()})
-    return render_template('book/book.html',
+    return custom_render_template('book/book.html',
                            pagination=pagination,
                            can_write_comment=can_write_comment,
                            book=book,
@@ -185,7 +185,7 @@ def editbook(id):
     tags_list = []
     for tag in book.tags:
         tags_list.append(tag.name)
-    return render_template('book/edit_book.html', form=form, tags=';'.join(tags_list))
+    return custom_render_template('book/edit_book.html', form=form, tags=';'.join(tags_list))
 
 
 @main.route('/ebook/<int:id>/edit', methods=['POST','GET'])
@@ -214,10 +214,12 @@ def editebook(id):
                 book.image_path = url_for('static', filename='uploads/'+file_name+'.jpg')
             else:
                 book.image_path = url_for('static.', filename='images/ebooks_default.png')
-        book.tags=[]
+        book.tags[:]=[]
         if tag_string is not None and len(tag_string.split(';'))>0:
             for t in tag_string.split(';'):
                 tag = Tag.findOrInsert(t)
+                if tag is None:
+                    continue
                 book.tags.append(tag)
         book.name = form.name.data
         book.author = form.author.data
@@ -233,7 +235,7 @@ def editebook(id):
     tags_list = []
     for tag in book.tags:
         tags_list.append(tag.name)
-    return render_template('book/edit_ebook.html', form=form, tags=';'.join(tags_list))
+    return custom_render_template('book/edit_ebook.html', form=form, tags=';'.join(tags_list))
 
 @main.route('/book/<int:id>/delete', methods=['GET'])
 @login_required
@@ -252,7 +254,7 @@ def ebooks():
     else:
         pagination = Ebook.query.whoosh_search(search).order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
     books_list = pagination.items    
-    return render_template('book/ebooks.html',ebooks = books_list, pagination = pagination, app_name='Flask-BMS')
+    return custom_render_template('book/ebooks.html',ebooks = books_list, pagination = pagination, app_name='Flask-BMS')
 
 @main.route('/ebook/<int:id>/delete', methods=['GET'])
 @login_required
@@ -291,7 +293,7 @@ def upload_ebooks():
         db.session.add(book)
         flash('上传电子书成功')
         return redirect(url_for('main.upload_ebooks'))
-    return render_template('book/upload_ebook.html', form=form)
+    return custom_render_template('book/upload_ebook.html', form=form)
 
 @main.route('/ebook/<int:id>', methods=['GET', 'POST'])
 def ebook(id):
@@ -312,10 +314,10 @@ def ebook(id):
         error_out=False)
     tags = []
     for i in ebook.tags:
-        tags.append({'name':i.name,'className':color_picker()})
+        tags.append({'name':i.name,'className':'info'})
     comments = pagination.items
     can_write_comment = current_user.can(Permission.WRITE_COMMENT)
-    return render_template('book/ebook.html',
+    return custom_render_template('book/ebook.html',
                            pagination=pagination,
                            url_point = 'main.ebook',
                            can_write_comment=can_write_comment,
@@ -365,7 +367,7 @@ def ebook_tag(name):
         page = request.args.get('page', 1, type=int)
         pagination =  Tag.query.filter_by(name=name).first().ebooks.order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
         books_list = pagination.items
-        return render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
+        return custom_render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
     except Exception:
         return abort(404)
         
@@ -375,7 +377,7 @@ def book_tag(name):
         page = request.args.get('page', 1, type=int)
         pagination = Tag.query.filter_by(name=name).first().books.order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
         books_list = pagination.items    
-        return render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
+        return custom_render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
     except Exception:
         return abort(404)
 @main.route('/ebook/category/<string:name>', methods=['GET'])
@@ -384,7 +386,7 @@ def ebook_category(name):
         page = request.args.get('page', 1, type=int)
         pagination =  Category.query.filter_by(name=name).first().ebooks.order_by(Ebook.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
         books_list = pagination.items
-        return render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
+        return custom_render_template('book/ebooks.html', ebooks=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
     except Exception:
         return abort(404)
 @main.route('/book/category/<string:name>', methods=['GET'])
@@ -393,7 +395,7 @@ def book_category(name):
         page = request.args.get('page', 1, type=int)
         pagination = Category.query.filter_by(name=name).first().books.order_by(Book.id.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
         books_list = pagination.items    
-        return render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
+        return custom_render_template('book/books.html', books=books_list, pagination = pagination, app_name='Flask-BMS',tag_name=name)
     except Exception:
         return abort(404)
 

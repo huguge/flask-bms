@@ -40,7 +40,7 @@ class AdminProfileForm(FlaskForm):
 
 # 上传图书表单
 class UploadEbookForm(FlaskForm):
-    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,64)])
+    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,200)])
     author = StringField(u'作者',render_kw={'placeholder':'选填内容'})
     category = SelectField('选择类别',coerce=int)
     tag = StringField(u'图书标签',render_kw={'placeholder':'请使用;分割'})
@@ -52,7 +52,7 @@ class UploadEbookForm(FlaskForm):
         self.category.choices = [(c.id,c.name) for c in Category.query.order_by(Category.name).all()]
 # 上传图书表单
 class EditEBookForm(FlaskForm):
-    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,64)])
+    name = StringField(u'名称', validators=[DataRequired(message="该选项不能为空"),Length(1,200)])
     author = StringField(u'作者',render_kw={'placeholder':'选填内容'})
     category = SelectField('选择类别',coerce=int)
     tag = StringField(u'图书标签',render_kw={'placeholder':'请使用;分割不同标签'})

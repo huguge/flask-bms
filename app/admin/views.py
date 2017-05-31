@@ -2,17 +2,18 @@
 import json
 import os
 
-from flask import render_template, session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
+from flask import session, redirect, url_for,flash,current_app,request,send_file,abort,jsonify
 from sqlalchemy.sql import text
 from flask_login import login_required,current_user
-from dotenv import set_key 
+from dotenv import set_key
 
 from app.admin import admin 
-from app import db
-from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent,Role,ConfigTable
+from app import db, reload_config
+from app.models import User, Ebook, Comment, Permission,Book,Tag, BookRent,Role,ConfigTable,Category
 from app.lib import super_admin_require
 from config import config
 from app.admin.forms import ConfigForm
+from app.lib import custom_render_template
 
 @admin.route('/')
 @login_required
@@ -65,7 +66,7 @@ def admin_dashboard():
         each_day_download_date = []
         each_day_download_count = []        
 
-    return render_template('admin/index.html', 
+    return custom_render_template('admin/index.html', 
                             app_name='Flask-BMS',
                             best_download_books_name=json.dumps(best_download_books_name),
                             best_download_books_downloads=json.dumps(best_download_books_downloads),
@@ -88,7 +89,7 @@ def admin_user():
     else:
         pagination = User.query.whoosh_search(search).order_by(User.created_at.desc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
     users_list = pagination.items    
-    return render_template('admin/user.html',roles=roles,users = users_list, pagination = pagination, app_name='Flask-BMS')
+    return custom_render_template('admin/user.html',roles=roles,users = users_list, pagination = pagination, app_name='Flask-BMS')
 
 
 @admin.route('/toggle_user_confirmed/<int:id>')
@@ -141,10 +142,46 @@ def admin_config():
         env = os.getenv('FLASK_BMS_ENV') or 'default'
         for c in config_name_list:
             form[c].data = getattr(config[env],c)
-        return render_template('admin/config.html',form=form,app_name='Flask-BMS')
+        return custom_render_template('admin/config.html',form=form,app_name='Flask-BMS')
 
 @admin.route('/about')
 @login_required
 @super_admin_require
 def admin_about():
-    return render_template('admin/about.html', app_name='Flask-BMS')
+    return custom_render_template('admin/about.html', app_name='Flask-BMS')
+
+
+@admin.route('/category/<int:id>/delete', methods=['GET'])
+@login_required
+@super_admin_require
+def delete_category(id):
+    cat = Category.query.get_or_404(id)
+    db.session.delete(cat)
+    db.session.commit()
+    reload_config(os.getenv('FLASK_BMS_ENV') or 'default')
+    return redirect(url_for('admin.admin_content_config'))
+
+
+
+@admin.route('/contentadmin', methods=['POST','GET'])
+@login_required
+@super_admin_require
+def admin_content_config():
+    page = request.args.get('page', 1, type=int)
+    new_category_name = request.form.get('new_category_name')
+    print new_category_name
+    if new_category_name is None:
+        pagination = Category.query.order_by(Category.id.asc()).paginate(page,per_page=current_app.config['FLASK_BMS_MAX_PER_PAGE'])
+        category_list = pagination.items    
+    else:
+        if new_category_name.strip() == '':
+            flash("提交内容为空")
+            return redirect(url_for("admin.admin_content_config"))
+        else:    
+            cat = Category.query.filter_by(name=new_category_name).first()
+            if cat is None:
+                cat = Category(name=new_category_name)
+                db.session.add(cat)
+                flash("新的内容提交成功")
+                return redirect(url_for("admin.admin_content_config"))
+    return custom_render_template('admin/content_admin.html',category = category_list, pagination = pagination, app_name='Flask-BMS')

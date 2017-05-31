@@ -13,7 +13,7 @@
         {% endfor %}
             <div class ="row">
                 <div class="page-header col-md-10">
-                    <h2>用户列表</h2>
+                    <h1>用户列表</h1>
                     <div class='search-box'>
                         <form class='search-form'>
                             <input class='form-control' placeholder='搜索用户' type='text' id="search-term">
@@ -22,7 +22,7 @@
                             </button>
                         </form>
                     </div>
-                </div> 
+                </div>
                 <div class = "page-content col-md-10 user-list">
                     <table class="table table-hover">
                         <thead>
@@ -72,7 +72,7 @@
                     </table>
                     {% if pagination.pages > 1 %}
                     <div class="pagination">
-                        {{ macros.pagination_widget(pagination,'main.ebooks')}}
+                        {{ macros.pagination_widget(pagination,'admin.admin_user')}}
                     </div>
                     {% endif %}
                 </div>
